@@ -131,13 +131,17 @@ This showcase highlights the intended FigureWeave workflow:
 
 ## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f5a5.svg" width="18"/> UI Preview
 
-The browser-based FigureWeave interface for configuring providers, reviewing artifacts, and launching editable figure generation:
+The browser-based FigureWeave interface is shown below with both the configuration view and the editable SVG canvas.
 
-1. UI snapshot: [img/UI/UI.png](img/UI/UI.png)
-2. Promo artwork: [img/UI/FigureWeave.jpg](img/UI/FigureWeave.jpg)
+1. Config view: [img/UI/UI_1.png](img/UI/UI_1.png)
+2. Editable canvas: [img/UI/UI_2.png](img/UI/UI_2.png)
 
 <p align="center">
-  <img src="img/UI/UI.png" alt="FigureWeave UI showcase" width="88%"/>
+  <img src="img/UI/UI_1.png" alt="FigureWeave config UI" width="88%"/>
+</p>
+
+<p align="center">
+  <img src="img/UI/UI_2.png" alt="FigureWeave editable canvas UI" width="88%"/>
 </p>
 
 ---

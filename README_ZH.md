@@ -113,14 +113,19 @@ FigureWeave 更适合以下图形：
 
 ---
 
-## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f5a5.svg" width="18"/> 界面预览
+## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f5a5.svg" width="18"/> ????
 
-FigureWeave 的浏览器界面用于配置 provider、查看中间产物并启动可编辑科研图生成流程：
+?????? FigureWeave ????????? SVG ?????
 
-1. UI 截图：[`img/UI/UI.png`](img/UI/UI.png)
+1. ?????[`img/UI/UI_1.png`](img/UI/UI_1.png)
+2. ??????[`img/UI/UI_2.png`](img/UI/UI_2.png)
 
 <p align="center">
-  <img src="img/UI/UI.png" alt="FigureWeave 界面预览" width="88%"/>
+  <img src="img/UI/UI_1.png" alt="FigureWeave ????" width="88%"/>
+</p>
+
+<p align="center">
+  <img src="img/UI/UI_2.png" alt="FigureWeave ?????" width="88%"/>
 </p>
 
 ---
