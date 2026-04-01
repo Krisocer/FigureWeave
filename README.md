@@ -6,6 +6,12 @@
 
 **From method text to editable scientific figures**
 
+<p align="center">
+  <img alt="Gemini" src="https://img.shields.io/badge/Gemini-4285F4?style=for-the-badge&labelColor=F8F5EF&color=4285F4"/>
+  <img alt="Claude" src="https://img.shields.io/badge/Claude-D97706?style=for-the-badge&labelColor=F8F5EF&color=D97706"/>
+  <img alt="OpenAI" src="https://img.shields.io/badge/OpenAI-111827?style=for-the-badge&labelColor=F8F5EF&color=111827"/>
+</p>
+
 [English](README.md) | [涓枃](README_ZH.md)
 
 </div>
@@ -119,6 +125,14 @@ FigureWeave currently runs in five major stages:
 ---
 
 ## ⚙️ Configuration
+
+### Provider Labels
+
+<p>
+  <img alt="Gemini" src="https://img.shields.io/badge/Gemini-4285F4?style=flat-square&label=Image%20%26%20SVG&labelColor=F8F5EF"/>
+  <img alt="Claude" src="https://img.shields.io/badge/Anthropic%20Claude-D97706?style=flat-square&label=SVG%20Reasoning&labelColor=F8F5EF"/>
+  <img alt="OpenAI" src="https://img.shields.io/badge/OpenAI-111827?style=flat-square&label=Image%20%26%20SVG&labelColor=F8F5EF"/>
+</p>
 
 ### Image draft provider
 
@@ -324,6 +338,8 @@ The current project extends that direction with a more editing-oriented and depl
 ## License
 
 This repository currently keeps the existing project license in [`LICENSE`](LICENSE).
+
+
 
 
 
