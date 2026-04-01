@@ -1,5 +1,9 @@
 <div align="center">
 
+<p align="center">
+  <img src="img/UI/FigureWeave.jpg" alt="FigureWeave promo" width="88%"/>
+</p>
+
 # FigureWeave
 
 **从方法文本到可编辑科研插图**
@@ -31,11 +35,7 @@
   </a>
 </p>
 
-<p align="center">
-  <img src="img/UI/FigureWeave.jpg" alt="FigureWeave promo" width="88%"/>
-</p>
-
-[English](README.md) | [??](README_ZH.md)
+[English](README.md) | [中文](README_ZH.md)
 
 </div>
 
@@ -62,23 +62,7 @@ FigureWeave 更适合以下图形：
 - 模型结构图
 - 可继续人工润色的论文插图草稿
 
-å®**ä¸éå**æ¿ä»£ matplotlibãseabornãggplotãOrigin è¿ç±»ä»¥ç²¾ç¡®æ°å¼ä¸ºæ ¸å¿çç»è®¡ç»å¾å·¥å·ã
-
----
-
-## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f5c2.svg" width="18"/> ä»£ç ç»æ
-
-é¡¹ç®ç°å¨å·²ç»ä¸åæ¯åä¸ªè¶é¿èæ¬ï¼èæ¯æåè½æåå°äº `src/figureweave/` ä¸­ã
-
-- [`figureweave.py`](figureweave.py) ç°å¨æ¯å¾èçä¸å±å¼å®¹å¥å£ï¼è´è´£ CLI å¯å¨åé¡¶å±å¯¼åºã
-- [`src/figureweave/config.py`](src/figureweave/config.py) è´è´£ provider é»è®¤å¼ãè·¯å¾åå±äº«å¸¸éã
-- [`src/figureweave/llm.py`](src/figureweave/llm.py) è´è´£ GeminiãOpenAIãClaudeãOpenRouter ç­æ¨¡åè°ç¨é»è¾ã
-- [`src/figureweave/vision.py`](src/figureweave/vision.py) è´è´£çå¾ãSAM3 åå²åå»èæ¯ç¸å³æµç¨ã
-- [`src/figureweave/svg_ops.py`](src/figureweave/svg_ops.py) è´è´£ SVG éå»ºãä¿®å¤ãä¼åä¸ç´ ææ¿æ¢ã
-- [`src/figureweave/pipeline.py`](src/figureweave/pipeline.py) è´è´£ç«¯å°ç«¯æµç¨ç¼æåå¤åéçæã
-- [`src/figureweave/cli.py`](src/figureweave/cli.py) è´è´£å½ä»¤è¡åæ°å®ä¹ä¸å¥å£ã
-
-è¿æ ·æåä¹åï¼ä»£ç ä¼æ´å®¹æç»´æ¤ãè°è¯åç»§ç»­æ©å±ï¼åæ¶ä¸ä¼æ¹ååæ¥çå½ä»¤è¡ä½¿ç¨æ¹å¼ã
+它**不适合**替代 matplotlib、seaborn、ggplot、Origin 这类以精确数值为核心的统计绘图工具。
 
 ---
 

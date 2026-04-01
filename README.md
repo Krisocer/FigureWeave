@@ -1,5 +1,9 @@
 <div align="center">
 
+<p align="center">
+  <img src="img/UI/FigureWeave.jpg" alt="FigureWeave promo" width="88%"/>
+</p>
+
 # FigureWeave
 
 **From method text to editable scientific figures**
@@ -31,11 +35,7 @@
   </a>
 </p>
 
-<p align="center">
-  <img src="img/UI/FigureWeave.jpg" alt="FigureWeave promo" width="88%"/>
-</p>
-
-[English](README.md) | [??](README_ZH.md)
+[English](README.md) | [中文](README_ZH.md)
 
 </div>
 
@@ -81,7 +81,6 @@ The project is no longer organized as one large monolithic script.
 This split makes the codebase easier to extend, debug, and test without changing the public CLI usage.
 
 ---
-
 
 ## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/2728.svg" width="18"/> What Is New In FigureWeave
 
@@ -235,13 +234,7 @@ The canvas page lets you:
 ### Basic
 
 ```bash
-python figureweave.py \
-  --method_file paper.txt \
-  --output_dir outputs/demo \
-  --image_provider gemini \
-  --image_api_key YOUR_GEMINI_KEY \
-  --svg_provider anthropic \
-  --svg_api_key YOUR_ANTHROPIC_KEY
+python figureweave.py   --method_file paper.txt   --output_dir outputs/demo   --image_provider gemini   --image_api_key YOUR_GEMINI_KEY   --svg_provider anthropic   --svg_api_key YOUR_ANTHROPIC_KEY
 ```
 
 ### Single-Provider Fallback
@@ -249,24 +242,13 @@ python figureweave.py \
 If you want to use one provider for both stages, you can still use:
 
 ```bash
-python figureweave.py \
-  --method_file paper.txt \
-  --output_dir outputs/demo \
-  --provider gemini \
-  --api_key YOUR_GEMINI_KEY
+python figureweave.py   --method_file paper.txt   --output_dir outputs/demo   --provider gemini   --api_key YOUR_GEMINI_KEY
 ```
 
 ### Multi-Candidate Generation
 
 ```bash
-python figureweave.py \
-  --method_file paper.txt \
-  --output_dir outputs/demo_multi \
-  --image_provider gemini \
-  --image_api_key YOUR_GEMINI_KEY \
-  --svg_provider openai \
-  --svg_api_key YOUR_OPENAI_KEY \
-  --num_candidates 3
+python figureweave.py   --method_file paper.txt   --output_dir outputs/demo_multi   --image_provider gemini   --image_api_key YOUR_GEMINI_KEY   --svg_provider openai   --svg_api_key YOUR_OPENAI_KEY   --num_candidates 3
 ```
 
 ---
@@ -287,11 +269,11 @@ pip install -e .
 
 You also need:
 
-- a supported NVIDIA GPU
-- CUDA-capable PyTorch in this environment
-- Hugging Face access to gated SAM3 weights
+- an available NVIDIA GPU
+- CUDA-enabled PyTorch in the current environment
+- Hugging Face access to SAM3
 
-If local SAM3 is unavailable, the codebase can still fall back to other segmentation paths depending on configuration.
+If local SAM3 is unavailable, the codebase can still fall back to other segmentation paths depending on your configuration.
 
 ---
 
@@ -328,7 +310,7 @@ Build and run:
 docker compose up -d --build
 ```
 
-Check health:
+Health checks:
 
 ```bash
 docker compose ps
@@ -374,16 +356,16 @@ When multi-candidate mode is enabled, each run is stored under:
 
 FigureWeave is **inspired by AutoFigure** and builds on the broader idea of converting scientific method descriptions into figure drafts.
 
-The current project extends that direction with a more editing-oriented and deployment-oriented system, especially in:
+The current project extends that direction with:
 
 - local GPU segmentation
 - dual-provider routing
 - multi-candidate generation
-- browser-centered SVG refinement
-- UI and workflow redesign
+- in-browser SVG refinement
+- a more complete engineering workflow
 
 ---
 
 ## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f4c4.svg" width="18"/> License
 
-This repository currently keeps the existing project license in [`LICENSE`](LICENSE).
+This repository is released under the MIT License in [`LICENSE`](LICENSE).
