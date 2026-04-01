@@ -1,0 +1,358 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2816 1536" width="2816" height="1536">
+  <!-- Title -->
+  <text x="1408" y="90" font-family="Arial, sans-serif" font-size="72" font-weight="bold" text-anchor="middle" fill="#111">A clean academic workflow for multimodal medical report generation.</text>
+
+  <!-- Left Side: Inputs -->
+  
+  <!-- Top Left: Chest X-ray Image -->
+  <g id="chest-xray-group">
+    <!-- Outer Box -->
+    <rect x="35" y="195" width="485" height="585" rx="30" fill="#e8f2fc" stroke="#5b86b5" stroke-width="4"/>
+    <text x="277" y="260" font-family="Arial, sans-serif" font-size="46" text-anchor="middle" fill="#000">Chest X-ray Image</text>
+    
+    <!-- Image Placeholder -->
+    <rect x="85" y="285" width="385" height="385" rx="20" fill="#1a1a1a" stroke="#000" stroke-width="2"/>
+    <rect x="95" y="295" width="365" height="365" fill="#4a4a4a"/>
+    <!-- Simulated X-ray content -->
+    <path d="M 150 400 Q 200 300 277 300 Q 350 300 400 400 L 400 600 L 150 600 Z" fill="#888" opacity="0.6"/>
+    <path d="M 180 450 Q 220 350 277 350 Q 330 350 370 450 L 370 600 L 180 600 Z" fill="#ccc" opacity="0.6"/>
+    <line x1="277" y1="350" x2="277" y2="600" stroke="#fff" stroke-width="10" opacity="0.5"/>
+    <text x="430" y="320" font-family="Arial, sans-serif" font-size="20" fill="#fff">L</text>
+    
+    <text x="277" y="735" font-family="Arial, sans-serif" font-size="46" text-anchor="middle" fill="#000">Chest X-ray Image</text>
+    
+    <!-- Placeholder <AF>12 -->
+    <g id="AF12">
+      <rect x="375" y="525" width="130" height="210" fill="#808080" stroke="black" stroke-width="2"/>
+      <text x="440" y="630" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="28">&lt;AF&gt;12</text>
+    </g>
+  </g>
+
+  <!-- Arrow from X-ray to Visual Encoder -->
+  <g id="arrow-xray-to-visual">
+    <path d="M 535 490 L 565 490 L 565 475 L 595 500 L 565 525 L 565 510 L 535 510 Z" fill="#e8f2fc" stroke="#5b86b5" stroke-width="4"/>
+  </g>
+
+  <!-- Bottom Left: Structured Patient Information -->
+  <g id="structured-patient-group">
+    <!-- Outer Box -->
+    <rect x="35" y="875" width="485" height="475" rx="30" fill="#f0f7ec" stroke="#78a870" stroke-width="4"/>
+    
+    <!-- Inner Paper -->
+    <rect x="65" y="955" width="415" height="335" rx="15" fill="#fff" stroke="#000" stroke-width="2"/>
+    
+    <!-- Text Lines -->
+    <rect x="85" y="975" width="375" height="40" fill="#f0f0f0" rx="5"/>
+    <text x="95" y="1005" font-family="Arial, sans-serif" font-size="34" fill="#000">age:</text>
+    
+    <rect x="85" y="1035" width="375" height="40" fill="#f0f0f0" rx="5"/>
+    <text x="95" y="1065" font-family="Arial, sans-serif" font-size="34" fill="#000">sex,</text>
+    
+    <rect x="85" y="1095" width="375" height="40" fill="#f0f0f0" rx="5"/>
+    <text x="95" y="1125" font-family="Arial, sans-serif" font-size="34" fill="#000">clinical indications</text>
+    
+    <rect x="85" y="1155" width="375" height="40" fill="#f0f0f0" rx="5"/>
+    <text x="95" y="1185" font-family="Arial, sans-serif" font-size="34" fill="#000">indications;</text>
+    
+    <text x="95" y="1255" font-family="Arial, sans-serif" font-size="34" fill="#000">...</text>
+    
+    <text x="277" y="1395" font-family="Arial, sans-serif" font-size="42" text-anchor="middle" fill="#000">Structured Patient</text>
+    <text x="277" y="1450" font-family="Arial, sans-serif" font-size="42" text-anchor="middle" fill="#000">Information (Metadata)</text>
+    
+    <!-- Placeholder <AF>14 -->
+    <g id="AF14">
+      <rect x="365" y="1185" width="130" height="175" fill="#808080" stroke="black" stroke-width="2"/>
+      <text x="430" y="1272" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="24">&lt;AF&gt;14</text>
+    </g>
+  </g>
+
+  <!-- Arrow from Metadata to Text Encoder -->
+  <g id="arrow-metadata-to-text">
+    <path d="M 535 1130 L 565 1130 L 565 1115 L 595 1140 L 565 1165 L 565 1150 L 535 1150 Z" fill="#f0f7ec" stroke="#78a870" stroke-width="4"/>
+  </g>
+
+  <!-- Encoders -->
+  
+  <!-- Visual Encoder -->
+  <g id="visual-encoder-group">
+    <path d="M 585 305 L 885 365 L 885 625 L 585 685 Z" fill="#9bc4ed" stroke="#5b86b5" stroke-width="4"/>
+    <text x="735" y="470" font-family="Arial, sans-serif" font-size="46" font-weight="bold" text-anchor="middle" fill="#111">Visual</text>
+    <text x="735" y="525" font-family="Arial, sans-serif" font-size="46" font-weight="bold" text-anchor="middle" fill="#111">Encoder</text>
+    
+    <!-- Placeholder <AF>04 -->
+    <g id="AF04">
+      <rect x="645" y="575" width="90" height="120" fill="#808080" stroke="black" stroke-width="2"/>
+      <text x="690" y="635" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="20">&lt;AF&gt;04</text>
+    </g>
+    <!-- Placeholder <AF>13 -->
+    <g id="AF13">
+      <rect x="745" y="575" width="105" height="120" fill="#808080" stroke="black" stroke-width="2"/>
+      <text x="797" y="635" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="20">&lt;AF&gt;13</text>
+    </g>
+  </g>
+
+  <!-- Arrow from Visual Encoder to Features -->
+  <g id="arrow-visual-to-features">
+    <path d="M 905 480 L 935 480 L 935 465 L 965 490 L 935 515 L 935 500 L 905 500 Z" fill="#9bc4ed" stroke="#5b86b5" stroke-width="4"/>
+  </g>
+
+  <!-- Text/Tabular Encoder -->
+  <g id="text-encoder-group">
+    <path d="M 585 965 L 885 1025 L 885 1255 L 585 1315 Z" fill="#a4d1a0" stroke="#78a870" stroke-width="4"/>
+    <text x="735" y="1120" font-family="Arial, sans-serif" font-size="44" font-weight="bold" text-anchor="middle" fill="#111">Text/Tabular</text>
+    <text x="735" y="1175" font-family="Arial, sans-serif" font-size="44" font-weight="bold" text-anchor="middle" fill="#111">Encoder</text>
+    
+    <!-- Placeholder <AF>10 -->
+    <g id="AF10">
+      <rect x="630" y="1225" width="100" height="110" fill="#808080" stroke="black" stroke-width="2"/>
+      <text x="680" y="1280" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="20">&lt;AF&gt;10</text>
+    </g>
+    <!-- Placeholder <AF>02 -->
+    <g id="AF02">
+      <rect x="745" y="1225" width="110" height="110" fill="#808080" stroke="black" stroke-width="2"/>
+      <text x="800" y="1280" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="20">&lt;AF&gt;02</text>
+    </g>
+  </g>
+
+  <!-- Arrow from Text Encoder to Embedding -->
+  <g id="arrow-text-to-embedding">
+    <path d="M 900 1140 L 930 1140 L 930 1125 L 960 1150 L 930 1175 L 930 1160 L 900 1160 Z" fill="#a4d1a0" stroke="#78a870" stroke-width="4"/>
+  </g>
+
+  <!-- Intermediate Representations -->
+  
+  <!-- Patch & Global Radiographic Features -->
+  <g id="radiographic-features">
+    <text x="1080" y="240" font-family="Arial, sans-serif" font-size="42" text-anchor="middle" fill="#000">Patch &amp; Global</text>
+    <text x="1080" y="290" font-family="Arial, sans-serif" font-size="42" text-anchor="middle" fill="#000">Radiographic</text>
+    <text x="1080" y="340" font-family="Arial, sans-serif" font-size="42" text-anchor="middle" fill="#000">Features</text>
+    
+    <!-- Top Box -->
+    <rect x="965" y="380" width="230" height="80" rx="15" fill="#e8f2fc" stroke="#5b86b5" stroke-width="4"/>
+    <!-- Simulated patches -->
+    <rect x="975" y="390" width="40" height="60" fill="#4a4a4a"/>
+    <path d="M 975 420 Q 995 390 1015 420 L 1015 450 L 975 450 Z" fill="#888"/>
+    <rect x="1020" y="390" width="40" height="60" fill="#4a4a4a"/>
+    <path d="M 1020 430 Q 1040 400 1060 430 L 1060 450 L 1020 450 Z" fill="#888"/>
+    <rect x="1065" y="390" width="40" height="60" fill="#4a4a4a"/>
+    <path d="M 1065 410 Q 1085 390 1105 410 L 1105 450 L 1065 450 Z" fill="#888"/>
+    <rect x="1110" y="390" width="40" height="60" fill="#4a4a4a"/>
+    <path d="M 1110 440 Q 1130 400 1150 440 L 1150 450 L 1110 450 Z" fill="#888"/>
+    <rect x="1155" y="390" width="30" height="60" fill="#4a4a4a"/>
+    
+    <!-- Dots -->
+    <circle cx="1080" cy="485" r="4" fill="#000"/>
+    <circle cx="1080" cy="500" r="4" fill="#000"/>
+    <circle cx="1080" cy="515" r="4" fill="#000"/>
+    
+    <!-- Bottom Box -->
+    <rect x="965" y="530" width="230" height="80" rx="15" fill="#e8f2fc" stroke="#5b86b5" stroke-width="4"/>
+    
+    <!-- Placeholder <AF>11 -->
+    <g id="AF11">
+      <rect x="975" y="540" width="55" height="60" fill="#808080" stroke="black" stroke-width="2"/>
+      <text x="1002" y="570" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="14">&lt;AF&gt;11</text>
+    </g>
+    <!-- Placeholder <AF>03 -->
+    <g id="AF03">
+      <rect x="1035" y="540" width="50" height="60" fill="#808080" stroke="black" stroke-width="2"/>
+      <text x="1060" y="570" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="14">&lt;AF&gt;03</text>
+    </g>
+    
+    <!-- Internal Box in Bottom Box -->
+    <rect x="1090" y="540" width="50" height="60" rx="5" fill="#e8f2fc" stroke="#5b86b5" stroke-width="2"/>
+    <text x="1115" y="560" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#000">010</text>
+    <text x="1115" y="575" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#000">101</text>
+    <text x="1115" y="590" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#000">010</text>
+    
+    <!-- Dots in Bottom Box -->
+    <circle cx="1155" cy="570" r="3" fill="#000"/>
+    <circle cx="1165" cy="570" r="3" fill="#000"/>
+    <circle cx="1175" cy="570" r="3" fill="#000"/>
+  </g>
+
+  <!-- Demographic & Clinical Embedding -->
+  <g id="clinical-embedding">
+    <!-- Embedding Bar -->
+    <rect x="980" y="1130" width="200" height="40" rx="5" fill="#fff" stroke="#5b86b5" stroke-width="2"/>
+    <rect x="980" y="1130" width="30" height="40" fill="#8cb9e8"/>
+    <rect x="1010" y="1130" width="40" height="40" fill="#a4d1a0"/>
+    <rect x="1050" y="1130" width="30" height="40" fill="#8cb9e8"/>
+    <rect x="1080" y="1130" width="30" height="40" fill="#a4d1a0"/>
+    <rect x="1110" y="1130" width="40" height="40" fill="#8cb9e8"/>
+    <rect x="1150" y="1130" width="30" height="40" fill="#a4d1a0"/>
+    
+    <text x="1080" y="1220" font-family="Arial, sans-serif" font-size="42" text-anchor="middle" fill="#000">Demographic</text>
+    <text x="1080" y="1270" font-family="Arial, sans-serif" font-size="42" text-anchor="middle" fill="#000">&amp; Clinical</text>
+    <text x="1080" y="1320" font-family="Arial, sans-serif" font-size="42" text-anchor="middle" fill="#000">Embedding</text>
+  </g>
+
+  <!-- Arrows to Fusion Transformer -->
+  <!-- Top Arrow -->
+  <g id="arrow-features-to-fusion">
+    <path d="M 1210 490 L 1400 490 L 1400 560 L 1420 560 L 1390 590 L 1360 560 L 1380 560 L 1380 510 L 1210 510 Z" fill="#e8f2fc" stroke="#5b86b5" stroke-width="4"/>
+  </g>
+  
+  <!-- Bottom Arrow -->
+  <g id="arrow-embedding-to-fusion">
+    <path d="M 1200 1140 L 1400 1140 L 1400 1070 L 1420 1070 L 1390 1040 L 1360 1070 L 1380 1070 L 1380 1120 L 1200 1120 Z" fill="#e8f2fc" stroke="#5b86b5" stroke-width="4"/>
+  </g>
+
+  <!-- Cross-modal Fusion Transformer -->
+  <g id="fusion-transformer">
+    <!-- Main Box -->
+    <rect x="1270" y="590" width="330" height="450" rx="30" fill="#def0e9" stroke="#9b82c4" stroke-width="4"/>
+    <!-- Gradient Fill Approximation -->
+    <rect x="1270" y="590" width="330" height="450" rx="30" fill="url(#fusionGrad)" opacity="0.6"/>
+    <defs>
+      <linearGradient id="fusionGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#def0e9" />
+        <stop offset="50%" stop-color="#e2f0d9" />
+        <stop offset="100%" stop-color="#e8dcf0" />
+      </linearGradient>
+    </defs>
+    
+    <text x="1435" y="770" font-family="Arial, sans-serif" font-size="44" font-weight="bold" text-anchor="middle" fill="#111">Cross-modal</text>
+    <text x="1435" y="825" font-family="Arial, sans-serif" font-size="44" font-weight="bold" text-anchor="middle" fill="#111">Fusion</text>
+    <text x="1435" y="880" font-family="Arial, sans-serif" font-size="44" font-weight="bold" text-anchor="middle" fill="#111">Transformer</text>
+
+    <!-- Lightning Bolts (Top) -->
+    <path d="M 1320 560 L 1350 560 L 1330 630 L 1350 630 L 1310 690 L 1320 640 L 1300 640 Z" fill="#ffda75" stroke="#000" stroke-width="2"/>
+    <path d="M 1480 560 L 1510 560 L 1490 630 L 1510 630 L 1470 690 L 1480 640 L 1460 640 Z" fill="#ffda75" stroke="#000" stroke-width="2"/>
+    
+    <!-- Lightning Bolts (Bottom) -->
+    <path d="M 1310 940 L 1350 940 L 1320 1000 L 1340 1000 L 1300 1070 L 1310 1010 L 1290 1010 Z" fill="#ffda75" stroke="#000" stroke-width="2"/>
+    <path d="M 1470 940 L 1510 940 L 1480 1000 L 1500 1000 L 1460 1070 L 1470 1010 L 1450 1010 Z" fill="#ffda75" stroke="#000" stroke-width="2"/>
+  </g>
+
+  <!-- Arrow from Fusion to Shared Representation -->
+  <g id="arrow-fusion-to-shared">
+    <path d="M 1610 815 L 1650 815 L 1650 800 L 1680 825 L 1650 850 L 1650 835 L 1610 835 Z" fill="#e8dcf0" stroke="#9b82c4" stroke-width="4"/>
+  </g>
+
+  <!-- Shared Patient Representation -->
+  <g id="shared-representation">
+    <text x="1800" y="600" font-family="Arial, sans-serif" font-size="44" text-anchor="middle" fill="#000">Shared</text>
+    <text x="1800" y="655" font-family="Arial, sans-serif" font-size="44" text-anchor="middle" fill="#000">Patient</text>
+    <text x="1800" y="710" font-family="Arial, sans-serif" font-size="44" text-anchor="middle" fill="#000">Representation</text>
+    
+    <!-- Placeholder <AF>08 -->
+    <g id="AF08">
+      <rect x="1710" y="730" width="180" height="180" fill="#808080" stroke="black" stroke-width="2"/>
+      <text x="1800" y="820" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="32">&lt;AF&gt;08</text>
+    </g>
+    
+    <text x="1800" y="960" font-family="Arial, sans-serif" font-size="44" text-anchor="middle" fill="#000">Shared Patient</text>
+    <text x="1800" y="1015" font-family="Arial, sans-serif" font-size="44" text-anchor="middle" fill="#000">Representation</text>
+  </g>
+
+  <!-- Forked Arrow to Outputs -->
+  <g id="forked-arrow">
+    <!-- Main stem -->
+    <path d="M 1905 815 L 1970 815 L 1970 835 L 1905 835 Z" fill="#e8dcf0" stroke="#9b82c4" stroke-width="4"/>
+    <!-- Vertical bar -->
+    <path d="M 1970 510 L 1990 510 L 1990 1140 L 1970 1140 Z" fill="#e8dcf0" stroke="#9b82c4" stroke-width="4"/>
+    
+    <!-- Top Branch -->
+    <path d="M 1990 510 L 2020 510 L 2020 495 L 2050 520 L 2020 545 L 2020 530 L 1990 530 Z" fill="#e8dcf0" stroke="#9b82c4" stroke-width="4"/>
+    
+    <!-- Bottom Branch -->
+    <path d="M 1990 1120 L 2020 1120 L 2020 1105 L 2050 1130 L 2020 1155 L 2020 1140 L 1990 1140 Z" fill="#e8dcf0" stroke="#9b82c4" stroke-width="4"/>
+    
+    <!-- Fix overlapping strokes at joints -->
+    <rect x="1972" y="817" width="18" height="16" fill="#e8dcf0" stroke="none"/>
+    <rect x="1988" y="512" width="4" height="16" fill="#e8dcf0" stroke="none"/>
+    <rect x="1988" y="1122" width="4" height="16" fill="#e8dcf0" stroke="none"/>
+  </g>
+
+  <!-- Right Side: Outputs -->
+  
+  <!-- Top Right: Abnormality Classification Head -->
+  <g id="classification-head">
+    <text x="2200" y="240" font-family="Arial, sans-serif" font-size="46" text-anchor="middle" fill="#000">Abnormality</text>
+    <text x="2200" y="295" font-family="Arial, sans-serif" font-size="46" text-anchor="middle" fill="#000">Classification Head</text>
+    
+    <!-- Outer Box -->
+    <rect x="2050" y="350" width="360" height="310" rx="20" fill="#e8f2fc" stroke="#5b86b5" stroke-width="4"/>
+    
+    <!-- Checkbox Items -->
+    <!-- Item 1: Opacity -->
+    <g id="AF01">
+      <rect x="2070" y="380" width="60" height="45" fill="#808080" stroke="black" stroke-width="2"/>
+      <text x="2100" y="402" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12">&lt;AF&gt;01</text>
+    </g>
+    <text x="2140" y="415" font-family="Arial, sans-serif" font-size="38" fill="#000">Opacity</text>
+    
+    <!-- Item 2: Cardiomegaly -->
+    <g id="AF06">
+      <rect x="2070" y="440" width="60" height="45" fill="#808080" stroke="black" stroke-width="2"/>
+      <text x="2100" y="462" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12">&lt;AF&gt;06</text>
+    </g>
+    <text x="2140" y="475" font-family="Arial, sans-serif" font-size="38" fill="#000">Cardiomegaly</text>
+    
+    <!-- Item 3: Pleural Effusion -->
+    <g id="AF09">
+      <rect x="2070" y="500" width="60" height="45" fill="#808080" stroke="black" stroke-width="2"/>
+      <text x="2100" y="522" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12">&lt;AF&gt;09</text>
+    </g>
+    <text x="2140" y="535" font-family="Arial, sans-serif" font-size="38" fill="#000">Pleural Effusion</text>
+    
+    <!-- Item 4: Edema -->
+    <g id="AF05">
+      <rect x="2070" y="560" width="60" height="45" fill="#808080" stroke="black" stroke-width="2"/>
+      <text x="2100" y="582" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12">&lt;AF&gt;05</text>
+    </g>
+    <text x="2140" y="595" font-family="Arial, sans-serif" font-size="38" fill="#000">Edema</text>
+  </g>
+
+  <!-- Arrow to Predicted Labels -->
+  <g id="arrow-head-to-labels">
+    <path d="M 2420 490 L 2450 490 L 2450 475 L 2480 500 L 2450 525 L 2450 510 L 2420 510 Z" fill="#e8f2fc" stroke="#5b86b5" stroke-width="4"/>
+  </g>
+
+  <!-- Predicted Abnormality Labels -->
+  <g id="predicted-labels">
+    <text x="2630" y="460" font-family="Arial, sans-serif" font-size="44" text-anchor="middle" fill="#000">Predicted</text>
+    <text x="2630" y="515" font-family="Arial, sans-serif" font-size="44" text-anchor="middle" fill="#000">Abnormality</text>
+    <text x="2630" y="570" font-family="Arial, sans-serif" font-size="44" text-anchor="middle" fill="#000">Labels</text>
+  </g>
+
+  <!-- Bottom Right: Autoregressive Report Decoder -->
+  <g id="report-decoder">
+    <!-- Outer Box -->
+    <rect x="2050" y="1000" width="360" height="340" rx="20" fill="#e8dcf0" stroke="#9b82c4" stroke-width="4"/>
+    
+    <!-- Placeholder <AF>07 -->
+    <g id="AF07">
+      <rect x="2055" y="1030" width="95" height="280" fill="#808080" stroke="black" stroke-width="2"/>
+      <text x="2102" y="1170" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="18">&lt;AF&gt;07</text>
+    </g>
+    
+    <!-- Speech Bubble -->
+    <path d="M 2160 1060 L 2380 1060 Q 2390 1060 2390 1070 L 2390 1190 Q 2390 1200 2380 1200 L 2220 1200 L 2190 1240 L 2190 1200 L 2160 1200 Q 2150 1200 2150 1190 L 2150 1070 Q 2150 1060 2160 1060 Z" fill="#fff" stroke="#000" stroke-width="4"/>
+    <text x="2270" y="1145" font-family="Arial, sans-serif" font-size="34" text-anchor="middle" fill="#000">...free-text</text>
+    <text x="2270" y="1185" font-family="Arial, sans-serif" font-size="34" text-anchor="middle" fill="#000">report...</text>
+    
+    <text x="2230" y="1400" font-family="Arial, sans-serif" font-size="46" text-anchor="middle" fill="#000">Autoregressive</text>
+    <text x="2230" y="1455" font-family="Arial, sans-serif" font-size="46" text-anchor="middle" fill="#000">Report Decoder</text>
+  </g>
+
+  <!-- Arrow to Coherent Radiology Report -->
+  <g id="arrow-decoder-to-report">
+    <path d="M 2420 1130 L 2450 1130 L 2450 1115 L 2480 1140 L 2450 1165 L 2450 1150 L 2420 1150 Z" fill="#e8dcf0" stroke="#9b82c4" stroke-width="4"/>
+  </g>
+
+  <!-- Coherent Radiology Report -->
+  <g id="coherent-report">
+    <!-- Placeholder <AF>15 -->
+    <g id="AF15">
+      <rect x="2500" y="680" width="240" height="315" fill="#808080" stroke="black" stroke-width="2"/>
+      <text x="2620" y="837" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="40">&lt;AF&gt;15</text>
+    </g>
+    
+    <text x="2630" y="1110" font-family="Arial, sans-serif" font-size="44" text-anchor="middle" fill="#000">Coherent</text>
+    <text x="2630" y="1165" font-family="Arial, sans-serif" font-size="44" text-anchor="middle" fill="#000">Radiology</text>
+    <text x="2630" y="1220" font-family="Arial, sans-serif" font-size="44" text-anchor="middle" fill="#000">Report</text>
+  </g>
+
+</svg>

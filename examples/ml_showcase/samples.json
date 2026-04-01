@@ -1,0 +1,23 @@
+[
+  {
+    "id": "cv_feature_fusion",
+    "title": "Cross-View Feature Fusion",
+    "domain": "computer_vision",
+    "figure_caption": "A clean academic three-stage pipeline figure. Stage 1 is multi-view image input. Stage 2 is shared feature encoding and cross-view feature fusion. Stage 3 is object prediction output. Use rectangular modules, simple arrows, compact feature tokens, and no human figures or decorative scene elements.",
+    "method_text": "We propose a three-stage cross-view feature fusion framework for visual recognition. Stage 1 takes multi-view image inputs and converts them into visual tokens. Stage 2 applies a shared encoder followed by a fusion block that aggregates complementary information across views. Stage 3 uses the fused representation for final object prediction. The figure should look like a paper method diagram with three clear stages, feature flow arrows, and compact symbolic feature blocks instead of realistic scene details."
+  },
+  {
+    "id": "rag_three_stage",
+    "title": "Three-Stage Retrieval-Augmented Generation",
+    "domain": "nlp_llm",
+    "figure_caption": "A publication-style three-stage workflow. Stage 1 is query and document input. Stage 2 is retrieval and evidence selection. Stage 3 is answer generation with citations. Use clean boxes, arrows, database icon or simple storage block, and text feature blocks. Avoid people, avatars, or decorative icons.",
+    "method_text": "We design a three-stage retrieval-augmented generation pipeline. Stage 1 receives a user query together with a document collection. Stage 2 retrieves relevant passages, reranks them, and forms a compact evidence set. Stage 3 feeds the selected evidence into a language model to generate a grounded answer with citations. The figure should emphasize three large stages and the information flow between them, with a simple paper-like structure and minimal visual clutter."
+  },
+  {
+    "id": "multimodal_alignment_three_stage",
+    "title": "Multimodal Token Alignment",
+    "domain": "multimodal_ml",
+    "figure_caption": "A neat three-stage multimodal learning figure. Stage 1 is text tokens and image tokens as input. Stage 2 is cross-modal alignment with a central interaction block. Stage 3 is prediction and optimization output. Use encoder blocks, token strips, a central alignment module, and final prediction blocks. No people, no photorealistic content, and no unnecessary decoration.",
+    "method_text": "We present a three-stage multimodal token alignment method. Stage 1 extracts text tokens and image tokens from separate encoders. Stage 2 performs cross-modal alignment in a central interaction module that matches semantically related tokens and produces a fused representation. Stage 3 uses the aligned representation for prediction and training supervision. The figure should resemble a machine learning paper diagram with clean stage separators, module blocks, token sequences, and arrows."
+  }
+]

@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FigureWeave</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body data-page="input">
+    <div class="page page-shell">
+      <header class="hero-bar">
+        <div class="hero-brand">
+          <div class="brand-kicker">FigureWeave Studio</div>
+          <div class="brand">FigureWeave</div>
+          <div class="subtitle">Build publication-ready scientific visuals from methods, captions, and editable SVG refinement.</div>
+        </div>
+        <div class="hero-pills">
+          <div class="hero-pill">Local SAM3</div>
+          <div class="hero-pill">GPU Ready</div>
+          <div class="hero-pill">Editable SVG</div>
+        </div>
+      </header>
+
+      <main class="studio-layout">
+        <section class="story-panel">
+          <div class="story-hero">
+            <div class="story-copy">
+              <div class="section-tag">Research Draft</div>
+              <h1 class="story-title">From method prose to a figure you can still edit.</h1>
+              <p class="story-text">
+                Use structured method text and an optional caption to steer the pipeline, then compare intermediate artifacts in the canvas and keep the best candidate.
+              </p>
+            </div>
+            <div class="story-metrics">
+              <div class="metric-card">
+                <div class="metric-label">Stage 1</div>
+                <div class="metric-value">Image Draft</div>
+                <div class="metric-note">Gemini generation with reference-aware styling.</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-label">Stage 2</div>
+                <div class="metric-value">Local SAM3</div>
+                <div class="metric-note">GPU segmentation and icon localization.</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-label">Stage 3</div>
+                <div class="metric-value">SVG Canvas</div>
+                <div class="metric-note">Promote the best candidate into editable vectors.</div>
+              </div>
+            </div>
+          </div>
+
+          <section class="editor-panel">
+            <div class="panel-head">
+              <div>
+                <div class="field-label field-label-static">Method Blueprint</div>
+                <div class="panel-title">Method Text</div>
+              </div>
+              <div class="panel-hint">Structured, concise inputs give cleaner scene layouts.</div>
+            </div>
+            <textarea
+              id="methodText"
+              class="textarea textarea-method"
+              placeholder="Paste your paper method text here..."
+            ></textarea>
+          </section>
+
+          <section class="editor-panel editor-panel-secondary">
+            <div class="panel-head">
+              <div>
+                <div class="field-label field-label-static">Figure Intent</div>
+                <div class="panel-title">Figure Caption</div>
+              </div>
+              <div class="panel-hint">Optional, but useful for clarifying modules, labels, and flow direction.</div>
+            </div>
+            <textarea
+              id="figureCaption"
+              class="textarea textarea-caption"
+              placeholder="Optional: describe the target figure in one caption-style paragraph..."
+            ></textarea>
+          </section>
+        </section>
+
+        <aside class="control-panel">
+          <section class="control-card">
+            <div class="control-card-head">
+              <div class="section-tag">Generation Stack</div>
+              <div class="panel-title">Engine Profile</div>
+            </div>
+
+            <div class="field-grid">
+              <div class="field-group">
+                <label class="field-label" for="imageProvider">Image Draft Provider</label>
+                <select id="imageProvider" class="input">
+                  <option value="gemini" selected>Gemini</option>
+                  <option value="openai">OpenAI</option>
+                </select>
+                <div class="hint" id="imageProviderHint"></div>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label" for="imageApiKey">Image Draft API Key</label>
+                <input id="imageApiKey" type="password" class="input" placeholder="AIza..." />
+              </div>
+            </div>
+
+            <div class="field-grid">
+              <div class="field-group">
+                <label class="field-label" for="svgProvider">SVG Reasoning Provider</label>
+                <select id="svgProvider" class="input">
+                  <option value="gemini" selected>Gemini</option>
+                  <option value="openai">OpenAI</option>
+                  <option value="anthropic">Anthropic Claude</option>
+                </select>
+                <div class="hint" id="svgProviderHint"></div>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label" for="svgApiKey">SVG Reasoning API Key</label>
+                <input id="svgApiKey" type="password" class="input" placeholder="AIza..." />
+              </div>
+            </div>
+
+            <div class="field-grid">
+              <div class="field-group">
+                <label class="field-label" for="optimizeIterations">Optimize</label>
+                <input id="optimizeIterations" class="input" type="number" min="0" value="0" />
+              </div>
+
+              <div class="field-group">
+                <label class="field-label" for="numCandidates">Candidates</label>
+                <input id="numCandidates" class="input" type="number" min="1" max="8" value="1" />
+              </div>
+            </div>
+
+            <div class="field-group" id="imageSizeGroup">
+              <label class="field-label" for="imageSize">Image Size</label>
+              <select id="imageSize" class="input">
+                <option value="1K">1K</option>
+                <option value="2K" selected>2K</option>
+                <option value="4K">4K</option>
+              </select>
+            </div>
+
+            <div class="field-group" id="generationModeGroup">
+              <label class="field-label" for="generationMode">Generation Mode</label>
+              <select id="generationMode" class="input">
+                <option value="balanced" selected>Balanced</option>
+                <option value="max_quality">Max Quality</option>
+              </select>
+              <div class="hint">
+                Balanced uses Gemini 3.1 Flash Image for stability and lower cost. Max Quality uses Pro Image for stronger visual fidelity.
+              </div>
+            </div>
+          </section>
+
+          <section class="control-card">
+            <div class="control-card-head">
+              <div class="section-tag">Segmentation</div>
+              <div class="panel-title">Detection Backend</div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="samBackend">SAM3 Backend</label>
+              <select id="samBackend" class="input">
+                <option value="local" selected>Local SAM3 (GPU)</option>
+                <option value="roboflow">Roboflow API</option>
+                <option value="fal">fal.ai API</option>
+              </select>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="samPrompt">SAM Prompt</label>
+              <input
+                id="samPrompt"
+                type="text"
+                class="input"
+                value="icon,person,robot,animal"
+                placeholder="icon,person,robot,animal"
+              />
+            </div>
+
+            <div class="field-group" id="samApiKeyGroup" hidden>
+              <label class="field-label" for="samApiKey">SAM3 API Key</label>
+              <input
+                id="samApiKey"
+                type="password"
+                class="input"
+                placeholder="FAL/Roboflow API key"
+              />
+            </div>
+          </section>
+
+          <section class="control-card">
+            <div class="control-card-head">
+              <div class="section-tag">Visual Direction</div>
+              <div class="panel-title">Reference Image</div>
+            </div>
+
+            <div class="upload-zone upload-zone-wide" id="uploadZone">
+              <input id="referenceFile" class="file-input" type="file" accept="image/*" />
+              <div class="upload-text">
+                Drop an image here or click to upload a visual reference.
+              </div>
+            </div>
+
+            <div class="upload-meta upload-meta-vertical">
+              <img id="referencePreview" class="upload-preview upload-preview-large" alt="Reference preview" />
+              <div id="referenceStatus" class="hint"></div>
+            </div>
+          </section>
+
+          <section class="launch-card">
+            <button id="confirmBtn" class="primary primary-launch">Generate And Open Canvas</button>
+            <div class="launch-note">The selected result opens in the canvas automatically. Multi-candidate runs keep every variant in the artifact drawer.</div>
+            <div id="errorMsg" class="error"></div>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

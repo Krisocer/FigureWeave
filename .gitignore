@@ -1,0 +1,31 @@
+# Python caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local runtime artifacts
+outputs/
+uploads/
+logs/
+*.log
+server_start_test.out
+server_start_test.err
+
+# Local env and secrets
+.env
+.env.*
+!.env.example
+
+# Local tooling/system files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+

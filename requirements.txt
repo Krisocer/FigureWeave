@@ -1,0 +1,33 @@
+# FigureWeave runtime requirements
+# Python: 3.10+ (local SAM3 often needs newer Python/CUDA per upstream docs)
+
+# Backend (FastAPI service)
+fastapi>=0.110,<1.0
+uvicorn[standard]>=0.24,<1.0
+pydantic>=2.6,<3.0
+python-multipart>=0.0.9,<1.0
+
+# API clients / HTTP
+requests>=2.31,<3.0
+openai>=1.0,<2.0
+google-genai>=1.0,<2.0
+
+# Core image + ML
+numpy>=1.26,<3.0
+Pillow>=10.0,<12.0
+torch>=2.1
+torchvision>=0.16
+timm>=0.9
+transformers>=4.39,<5.0
+kornia>=0.7,<1.0
+
+# SVG validation / rendering helpers (recommended)
+lxml>=4.9
+cairosvg>=2.7
+svglib>=1.5
+reportlab>=4.0
+
+# NOTE:
+# SAM3 is used in local backend mode but is installed separately:
+#   git clone https://github.com/facebookresearch/sam3.git
+#   cd sam3 && pip install -e .

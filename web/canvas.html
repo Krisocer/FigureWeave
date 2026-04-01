@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FigureWeave Canvas</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body data-page="canvas">
+    <div class="canvas-page canvas-shell-page">
+      <header class="canvas-header">
+        <div class="canvas-header-copy">
+          <div class="brand-kicker">FigureWeave Review</div>
+          <div class="brand">FigureWeave Canvas</div>
+          <div class="subtitle">Status: <span id="statusText">Waiting</span></div>
+        </div>
+        <div class="canvas-header-actions">
+          <button class="ghost ghost-contrast" id="backToConfigBtn">Back to Config</button>
+          <button class="ghost ghost-contrast" id="logToggle">Logs</button>
+          <div class="job-pill job-pill-dark">Job <span id="jobId"></span></div>
+        </div>
+      </header>
+
+      <main class="canvas-layout">
+        <section class="canvas-board">
+          <div class="canvas-frame-shell">
+            <div class="canvas-frame-header">
+              <div class="panel-title panel-title-light">Editable Canvas</div>
+              <div class="panel-hint panel-hint-light">Use the artifact drawer to swap between intermediate SVGs and candidate outputs.</div>
+            </div>
+            <div class="canvas-frame">
+              <iframe
+                id="svgEditorFrame"
+                class="svg-frame"
+                title="SVG-Edit Canvas"
+              ></iframe>
+              <div id="svgFallback" class="svg-fallback">
+                <div class="fallback-title">SVG-Edit not installed</div>
+                <div class="fallback-body">
+                  Drop an SVG-Edit build into <code>web/vendor/svg-edit/</code> (editor/index.html) to enable editing.
+                </div>
+                <object id="fallbackObject" type="image/svg+xml" class="fallback-object"></object>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="canvas-sidebar">
+          <section class="sidebar-card">
+            <div class="section-tag">Navigation</div>
+            <div class="panel-title">Review Controls</div>
+            <p class="sidebar-text">
+              Open logs for pipeline debugging, or open the artifact drawer to compare figure drafts, segmented overlays, icons, and SVG variants.
+            </p>
+            <div class="sidebar-actions">
+              <button class="ghost" id="artifactToggle">Artifacts</button>
+              <button class="ghost" id="logToggleSidebar">Logs</button>
+            </div>
+          </section>
+
+          <aside class="artifact-panel artifact-panel-docked" id="artifactPanel">
+            <div class="panel-header">Artifacts</div>
+            <div class="artifact-list" id="artifactList"></div>
+          </aside>
+        </aside>
+      </main>
+
+      <aside class="log-panel log-panel-wide" id="logPanel">
+        <div class="panel-header">Logs</div>
+        <div class="log-body" id="logBody"></div>
+      </aside>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
