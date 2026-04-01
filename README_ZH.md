@@ -4,8 +4,6 @@
   <img src="img/UI/FigureWeave.jpg" alt="FigureWeave promo" width="88%"/>
 </p>
 
-# FigureWeave
-
 **从方法文本到可编辑科研插图**
 
 <p align="center">
