@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="web/favicon.svg" alt="FigureWeave Logo" width="120"/>
-
 # FigureWeave
 
 **从方法文本到可编辑科研插图**
@@ -11,7 +9,7 @@
     <img alt="Python 3.10+" src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white"/>
   </a>
   <a href="LICENSE">
-    <img alt="License Apache 2.0" src="https://img.shields.io/badge/License-Apache%202.0-4F46E5?style=flat-square"/>
+    <img alt="License MIT" src="https://img.shields.io/badge/License-MIT-4F46E5?style=flat-square"/>
   </a>
   <a href="#local-sam3">
     <img alt="GPU Local SAM3" src="https://img.shields.io/badge/GPU-Local%20SAM3-16A34A?style=flat-square&logo=nvidia&logoColor=white"/>
