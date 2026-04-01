@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
 
 <img src="web/favicon.svg" alt="FigureWeave Logo" width="120"/>
 
@@ -12,15 +12,13 @@
   <img alt="OpenAI" src="https://img.shields.io/badge/OpenAI-111827?style=for-the-badge&labelColor=F8F5EF&color=111827"/>
 </p>
 
-[English](README.md) | [涓枃](README_ZH.md)
+[English](README.md) | [中文](README_ZH.md)
 
 </div>
 
 ---
 
-<img alt="Overview" src="https://img.shields.io/badge/Overview-EADBC8?style=flat-square&labelColor=F8F5EF&color=EADBC8"/>
-
-## Overview
+## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f4a1.svg" width="18"/> Overview
 
 FigureWeave is a research-engineering project for turning paper method descriptions into publication-style figures that remain editable as SVG.
 
@@ -45,9 +43,7 @@ It is **not** intended to replace precise plotting tools such as matplotlib, sea
 
 ---
 
-<img alt="What’s New" src="https://img.shields.io/badge/What’s%20New-D9C7B0?style=flat-square&labelColor=F8F5EF&color=D9C7B0"/>
-
-## What Is New In FigureWeave
+## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/2728.svg" width="18"/> What Is New In FigureWeave
 
 Compared with the original AutoFigure-style workflow, this project adds several concrete contributions:
 
@@ -55,7 +51,7 @@ Compared with the original AutoFigure-style workflow, this project adds several 
    Segmentation can run locally on CUDA instead of depending only on hosted APIs. This improves speed, privacy, and reproducibility for the icon-region extraction stage.
 
 2. **Dual-provider model routing**
-   Image drafting and SVG reasoning are now decoupled, so the pipeline can use different providers for different stages, such as Gemini -> Gemini, OpenAI -> OpenAI, Gemini -> Anthropic Claude, or OpenAI -> Anthropic Claude.
+   Image drafting and SVG reasoning are now decoupled, so the pipeline can use different providers for different stages, such as `Gemini -> Gemini`, `OpenAI -> OpenAI`, `Gemini -> Anthropic Claude`, or `OpenAI -> Anthropic Claude`.
 
 3. **Multi-candidate generation**
    A single run can generate multiple full candidates, preserve each artifact bundle, write a candidate manifest, and promote a selected result as the default output.
@@ -74,9 +70,7 @@ Compared with the original AutoFigure-style workflow, this project adds several 
 
 ---
 
-<img alt="Showcase" src="https://img.shields.io/badge/Showcase-E6D5C3?style=flat-square&labelColor=F8F5EF&color=E6D5C3"/>
-
-## 🎨 Gallery: Editable Vectorization & Style Transfer
+## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f3a8.svg" width="18"/> Gallery: Editable Vectorization & Style Transfer
 
 The following assets are used as the current FigureWeave showcase from the `multimodal_medical_report` run:
 
@@ -98,9 +92,7 @@ This showcase highlights the intended FigureWeave workflow:
 
 ---
 
-<img alt="UI Preview" src="https://img.shields.io/badge/UI%20Preview-E5DDD1?style=flat-square&labelColor=F8F5EF&color=E5DDD1"/>
-
-## 🖥️ UI Preview
+## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f5a5.svg" width="18"/> UI Preview
 
 The browser-based FigureWeave interface for configuring providers, reviewing artifacts, and launching editable figure generation:
 
@@ -112,9 +104,7 @@ The browser-based FigureWeave interface for configuring providers, reviewing art
 
 ---
 
-<img alt="Pipeline" src="https://img.shields.io/badge/Pipeline-D8E3DA?style=flat-square&labelColor=F8F5EF&color=D8E3DA"/>
-
-## 🚀 How It Works
+## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f680.svg" width="18"/> How It Works
 
 FigureWeave currently runs in five major stages:
 
@@ -140,9 +130,7 @@ FigureWeave currently runs in five major stages:
 
 ---
 
-<img alt="Configuration" src="https://img.shields.io/badge/Configuration-D8E0EA?style=flat-square&labelColor=F8F5EF&color=D8E0EA"/>
-
-## ⚙️ Configuration
+## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/2699.svg" width="18"/> Configuration
 
 ### Provider Labels
 
@@ -152,26 +140,22 @@ FigureWeave currently runs in five major stages:
   <img alt="OpenAI" src="https://img.shields.io/badge/OpenAI-111827?style=flat-square&label=Image%20%26%20SVG&labelColor=F8F5EF"/>
 </p>
 
-### Image draft provider
+### Image Draft Provider
 
 - `Gemini`
 - `OpenAI`
 
-### SVG reasoning and reconstruction provider
+### SVG Reasoning And Reconstruction Provider
 
 - `Gemini`
 - `OpenAI`
 - `Anthropic Claude`
 
-### Practical note
+### Practical Note
 
 Anthropic Claude is used here for **understanding and reconstruction**, not for native image generation. In this project, the image drafting stage should use Gemini or OpenAI.
 
----
-
-<img alt="Web" src="https://img.shields.io/badge/Web-E1D7EB?style=flat-square&labelColor=F8F5EF&color=E1D7EB"/>
-
-### Web Interface
+### <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f310.svg" width="18"/> Web Interface
 
 Start the server:
 
@@ -205,9 +189,7 @@ The canvas page lets you:
 
 ---
 
-<img alt="Quick Start" src="https://img.shields.io/badge/Quick%20Start-F0D89D?style=flat-square&labelColor=F8F5EF&color=F0D89D"/>
-
-## ⚡ Quick Start
+## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/26a1.svg" width="18"/> Quick Start
 
 ### Basic
 
@@ -221,7 +203,7 @@ python figureweave.py \
   --svg_api_key YOUR_ANTHROPIC_KEY
 ```
 
-### Single-provider fallback
+### Single-Provider Fallback
 
 If you want to use one provider for both stages, you can still use:
 
@@ -233,7 +215,7 @@ python figureweave.py \
   --api_key YOUR_GEMINI_KEY
 ```
 
-### Multi-candidate generation
+### Multi-Candidate Generation
 
 ```bash
 python figureweave.py \
@@ -248,9 +230,7 @@ python figureweave.py \
 
 ---
 
-<img alt="Local SAM3" src="https://img.shields.io/badge/Local%20SAM3-D2E5D7?style=flat-square&labelColor=F8F5EF&color=D2E5D7"/>
-
-## 🧩 Local SAM3
+## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f9e9.svg" width="18"/> Local SAM3
 
 FigureWeave supports local SAM3 execution on GPU.
 
@@ -272,21 +252,15 @@ If local SAM3 is unavailable, the codebase can still fall back to other segmenta
 
 ---
 
-<img alt="Installation" src="https://img.shields.io/badge/Installation-E4DED3?style=flat-square&labelColor=F8F5EF&color=E4DED3"/>
+## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f6e0.svg" width="18"/> Installation
 
-## ??? Installation
-
-<img alt="Python" src="https://img.shields.io/badge/Python-E8E1D7?style=flat-square&labelColor=F8F5EF&color=E8E1D7"/>
-
-### Python environment
+### <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f40d.svg" width="18"/> Python Environment
 
 ```bash
 pip install -r requirements.txt
 ```
 
-<img alt="Env" src="https://img.shields.io/badge/Env-E7DFD4?style=flat-square&labelColor=F8F5EF&color=E7DFD4"/>
-
-### Environment variables
+### <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f510.svg" width="18"/> Environment Variables
 
 At minimum, you will usually want:
 
@@ -303,9 +277,7 @@ Depending on your selected routing, you may also need:
 
 ---
 
-<img alt="Docker" src="https://img.shields.io/badge/Docker-D6E3F0?style=flat-square&labelColor=F8F5EF&color=D6E3F0"/>
-
-## 🐳 Docker
+## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f433.svg" width="18"/> Docker
 
 Build and run:
 
@@ -334,9 +306,7 @@ docker compose restart figureweave
 
 ---
 
-<img alt="Artifacts" src="https://img.shields.io/badge/Artifacts-E3DDD0?style=flat-square&labelColor=F8F5EF&color=E3DDD0"/>
-
-## 📦 Output Structure
+## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f4e6.svg" width="18"/> Output Structure
 
 Typical outputs include:
 
@@ -357,9 +327,7 @@ When multi-candidate mode is enabled, each run is stored under:
 
 ---
 
-<img alt="Credits" src="https://img.shields.io/badge/Credits-E7DCC8?style=flat-square&labelColor=F8F5EF&color=E7DCC8"/>
-
-## 🙏 Credits
+## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f64f.svg" width="18"/> Credits
 
 FigureWeave is **inspired by AutoFigure** and builds on the broader idea of converting scientific method descriptions into figure drafts.
 
@@ -373,20 +341,6 @@ The current project extends that direction with a more editing-oriented and depl
 
 ---
 
-<img alt="License" src="https://img.shields.io/badge/License-DED7CC?style=flat-square&labelColor=F8F5EF&color=DED7CC"/>
-
-## 📄 License
+## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f4c4.svg" width="18"/> License
 
 This repository currently keeps the existing project license in [`LICENSE`](LICENSE).
-
-
-
-
-
-
-
-
-
-
-
-
