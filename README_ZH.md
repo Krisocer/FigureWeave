@@ -23,17 +23,21 @@
 
 <p align="center">
   <a href="https://ai.google.dev/gemini-api/docs" target="_blank" rel="noopener noreferrer">
-    <img alt="Gemini" src="https://img.shields.io/badge/Gemini-??%20%26%20SVG-4285F4?style=flat-square"/>
+    <img alt="Gemini" src="https://img.shields.io/badge/Gemini-Image%20%26%20SVG-4285F4?style=flat-square"/>
   </a>
   <a href="https://platform.openai.com/docs/overview" target="_blank" rel="noopener noreferrer">
-    <img alt="OpenAI" src="https://img.shields.io/badge/OpenAI-??%20%26%20SVG-111827?style=flat-square"/>
+    <img alt="OpenAI" src="https://img.shields.io/badge/OpenAI-Image%20%26%20SVG-111827?style=flat-square"/>
   </a>
   <a href="https://docs.anthropic.com/" target="_blank" rel="noopener noreferrer">
-    <img alt="Claude" src="https://img.shields.io/badge/Claude-SVG%20??-D97706?style=flat-square"/>
+    <img alt="Claude" src="https://img.shields.io/badge/Claude-SVG%20Reasoning-D97706?style=flat-square"/>
   </a>
 </p>
 
-[English](README.md) | [中文](README_ZH.md)
+<p align="center">
+  <img src="img/UI/FigureWeave.jpg" alt="FigureWeave promo" width="88%"/>
+</p>
+
+[English](README.md) | [??](README_ZH.md)
 
 </div>
 
@@ -60,7 +64,23 @@ FigureWeave 更适合以下图形：
 - 模型结构图
 - 可继续人工润色的论文插图草稿
 
-它**不适合**替代 matplotlib、seaborn、ggplot、Origin 这类以精确数值为核心的统计绘图工具。
+å®**ä¸éå**æ¿ä»£ matplotlibãseabornãggplotãOrigin è¿ç±»ä»¥ç²¾ç¡®æ°å¼ä¸ºæ ¸å¿çç»è®¡ç»å¾å·¥å·ã
+
+---
+
+## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f5c2.svg" width="18"/> ä»£ç ç»æ
+
+é¡¹ç®ç°å¨å·²ç»ä¸åæ¯åä¸ªè¶é¿èæ¬ï¼èæ¯æåè½æåå°äº `src/figureweave/` ä¸­ã
+
+- [`figureweave.py`](figureweave.py) ç°å¨æ¯å¾èçä¸å±å¼å®¹å¥å£ï¼è´è´£ CLI å¯å¨åé¡¶å±å¯¼åºã
+- [`src/figureweave/config.py`](src/figureweave/config.py) è´è´£ provider é»è®¤å¼ãè·¯å¾åå±äº«å¸¸éã
+- [`src/figureweave/llm.py`](src/figureweave/llm.py) è´è´£ GeminiãOpenAIãClaudeãOpenRouter ç­æ¨¡åè°ç¨é»è¾ã
+- [`src/figureweave/vision.py`](src/figureweave/vision.py) è´è´£çå¾ãSAM3 åå²åå»èæ¯ç¸å³æµç¨ã
+- [`src/figureweave/svg_ops.py`](src/figureweave/svg_ops.py) è´è´£ SVG éå»ºãä¿®å¤ãä¼åä¸ç´ ææ¿æ¢ã
+- [`src/figureweave/pipeline.py`](src/figureweave/pipeline.py) è´è´£ç«¯å°ç«¯æµç¨ç¼æåå¤åéçæã
+- [`src/figureweave/cli.py`](src/figureweave/cli.py) è´è´£å½ä»¤è¡åæ°å®ä¹ä¸å¥å£ã
+
+è¿æ ·æåä¹åï¼ä»£ç ä¼æ´å®¹æç»´æ¤ãè°è¯åç»§ç»­æ©å±ï¼åæ¶ä¸ä¼æ¹ååæ¥çå½ä»¤è¡ä½¿ç¨æ¹å¼ã
 
 ---
 
@@ -117,10 +137,10 @@ FigureWeave 更适合以下图形：
 
 FigureWeave 的浏览器界面用于配置 provider、查看中间产物并启动可编辑科研图生成流程：
 
-1. UI 截图：[`img/case/UI.png`](img/case/UI.png)
+1. UI 截图：[`img/UI/UI.png`](img/UI/UI.png)
 
 <p align="center">
-  <img src="img/case/UI.png" alt="FigureWeave 界面预览" width="88%"/>
+  <img src="img/UI/UI.png" alt="FigureWeave 界面预览" width="88%"/>
 </p>
 
 ---

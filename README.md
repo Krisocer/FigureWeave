@@ -33,7 +33,11 @@
   </a>
 </p>
 
-[English](README.md) | [中文](README_ZH.md)
+<p align="center">
+  <img src="img/UI/FigureWeave.jpg" alt="FigureWeave promo" width="88%"/>
+</p>
+
+[English](README.md) | [??](README_ZH.md)
 
 </div>
 
@@ -63,6 +67,23 @@ FigureWeave is especially useful for:
 It is **not** intended to replace precise plotting tools such as matplotlib, seaborn, ggplot, or Origin for charts driven by exact numeric data.
 
 ---
+
+## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f5c2.svg" width="18"/> Code Layout
+
+The project is no longer organized as one large monolithic script.
+
+- [`figureweave.py`](figureweave.py) is now a thin compatibility entrypoint for CLI execution and top-level imports.
+- [`src/figureweave/config.py`](src/figureweave/config.py) stores provider defaults, paths, and shared constants.
+- [`src/figureweave/llm.py`](src/figureweave/llm.py) contains Gemini, OpenAI, Claude, OpenRouter, and related model-calling logic.
+- [`src/figureweave/vision.py`](src/figureweave/vision.py) covers image drafting, SAM3 segmentation, and background removal.
+- [`src/figureweave/svg_ops.py`](src/figureweave/svg_ops.py) handles SVG reconstruction, repair, optimization, and asset replacement.
+- [`src/figureweave/pipeline.py`](src/figureweave/pipeline.py) orchestrates the end-to-end pipeline and multi-candidate execution.
+- [`src/figureweave/cli.py`](src/figureweave/cli.py) defines the command-line interface.
+
+This split makes the codebase easier to extend, debug, and test without changing the public CLI usage.
+
+---
+
 
 ## <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/2728.svg" width="18"/> What Is New In FigureWeave
 
@@ -117,10 +138,11 @@ This showcase highlights the intended FigureWeave workflow:
 
 The browser-based FigureWeave interface for configuring providers, reviewing artifacts, and launching editable figure generation:
 
-1. UI snapshot: [img/case/UI.png](img/case/UI.png)
+1. UI snapshot: [img/UI/UI.png](img/UI/UI.png)
+2. Promo artwork: [img/UI/FigureWeave.jpg](img/UI/FigureWeave.jpg)
 
 <p align="center">
-  <img src="img/case/UI.png" alt="FigureWeave UI showcase" width="88%"/>
+  <img src="img/UI/UI.png" alt="FigureWeave UI showcase" width="88%"/>
 </p>
 
 ---
