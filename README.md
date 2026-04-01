@@ -4,8 +4,6 @@
   <img src="img/UI/FigureWeave.jpg" alt="FigureWeave promo" width="88%"/>
 </p>
 
-# FigureWeave
-
 **From method text to editable scientific figures**
 
 <p align="center">
