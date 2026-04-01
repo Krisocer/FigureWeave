@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 <img src="web/favicon.svg" alt="FigureWeave Logo" width="120"/>
 
@@ -6,7 +6,7 @@
 
 **From method text to editable scientific figures**
 
-[English](README.md) | [中文](README_ZH.md)
+[English](README.md) | [涓枃](README_ZH.md)
 
 </div>
 
@@ -16,7 +16,14 @@
 
 FigureWeave is a research-engineering project for turning paper method descriptions into publication-style figures that remain editable as SVG.
 
-This project is **inspired by AutoFigure**, but it is no longer a mirror of the original system. The current codebase has been reworked into a more practical figure authoring pipeline with local GPU segmentation, dual-provider model routing, candidate generation, and a redesigned interactive UI.
+This project is **inspired by AutoFigure**, but it is no longer a mirror of the original system. The current codebase has been reworked into a more practical figure authoring pipeline with:
+
+- local GPU SAM3 segmentation
+- split routing for image drafting and SVG reasoning
+- multi-candidate end-to-end generation
+- figure caption conditioning in addition to method text
+- SVG-first reconstruction with template, optimized template, and final assembly stages
+- CUDA-accelerated local post-processing for segmentation and background removal
 
 FigureWeave is especially useful for:
 
@@ -34,42 +41,58 @@ It is **not** intended to replace precise plotting tools such as matplotlib, sea
 
 Compared with the original AutoFigure-style workflow, this project adds several concrete contributions:
 
-1. **Editable-first workflow**
-   The pipeline is centered on producing SVG outputs that can be inspected and refined inside the browser.
+1. **Local SAM3 on GPU**
+   Segmentation can run locally on CUDA instead of depending only on hosted APIs. This improves speed, privacy, and reproducibility for the icon-region extraction stage.
 
-2. **Local SAM3 on GPU**
-   Segmentation can now run locally on GPU instead of relying only on hosted APIs, which improves speed, control, and privacy.
+2. **Dual-provider model routing**
+   Image drafting and SVG reasoning are now decoupled, so the pipeline can use different providers for different stages, such as Gemini -> Gemini, OpenAI -> OpenAI, Gemini -> Anthropic Claude, or OpenAI -> Anthropic Claude.
 
-3. **Dual-provider design**
-   The pipeline separates:
-   - image drafting
-   - SVG reasoning and reconstruction
+3. **Multi-candidate generation**
+   A single run can generate multiple full candidates, preserve each artifact bundle, write a candidate manifest, and promote a selected result as the default output.
 
-   This allows practical combinations such as:
-   - `Gemini -> Gemini`
-   - `OpenAI -> OpenAI`
-   - `Gemini -> Anthropic Claude`
-   - `OpenAI -> Anthropic Claude`
+4. **Figure caption conditioning**
+   The system accepts both method text and a figure caption / figure brief, so the generator and reconstructor can be constrained by explicit stage structure, layout intent, and narrative emphasis.
 
-4. **Multi-candidate generation**
-   A single request can produce multiple end-to-end candidates, keep each candidate artifact set, and promote the selected result.
+5. **SVG-first reconstruction pipeline**
+   Instead of treating the raster image as the final result, FigureWeave explicitly reconstructs an editable SVG template, optionally refines that template, and only then assembles the final SVG with extracted assets.
 
-5. **Figure caption support**
-   In addition to method text, the system accepts a figure caption / intent field to better constrain layout and narrative structure.
+6. **CUDA-accelerated local post-processing**
+   Background removal and other local visual post-processing stages now use GPU-capable PyTorch when available, reducing the CPU bottleneck of the original workflow.
 
-6. **GPU-accelerated local post-processing**
-   Background removal and local segmentation can run with CUDA-enabled PyTorch.
-
-7. **Redesigned UI**
-   The web interface has been rebuilt into a cleaner studio-style workflow with:
-   - separate provider controls
-   - candidate controls
-   - artifact review
-   - canvas-centered editing
+7. **More robust fallback behavior**
+   The current pipeline includes explicit fallback paths for no-icon cases, placeholder reduction, and provider-side failures, which makes batch generation more practical for real paper figure drafting.
 
 ---
 
-## Pipeline
+## 🎨 Gallery: Editable Vectorization & Style Transfer
+
+The following assets are used as the current FigureWeave showcase from the `multimodal_medical_report` run:
+
+1. Draft image: [img/case/multimodal_medical_report_draft.png](img/case/multimodal_medical_report_draft.png)
+2. Optimized SVG template: [img/case/multimodal_medical_report_template.svg](img/case/multimodal_medical_report_template.svg)
+3. Final assembled SVG: [img/case/multimodal_medical_report_final.svg](img/case/multimodal_medical_report_final.svg)
+4. UI snapshot: [img/case/UI.png](img/case/UI.png)
+
+<p align="center">
+  <img src="img/case/multimodal_medical_report_draft.png" alt="FigureWeave showcase draft" width="32%"/>
+  <img src="img/case/multimodal_medical_report_template.svg" alt="FigureWeave showcase optimized template" width="32%"/>
+  <img src="img/case/multimodal_medical_report_final.svg" alt="FigureWeave showcase final svg" width="32%"/>
+</p>
+
+<p align="center">
+  <img src="img/case/UI.png" alt="FigureWeave UI showcase" width="88%"/>
+</p>
+
+This showcase highlights the intended FigureWeave workflow:
+
+- `figure.png` as the model-generated draft
+- `optimized_template.svg` as the editable structural reconstruction
+- `final.svg` as the assembled showcase result
+- `UI.png` as the browser-based authoring interface for configuring and reviewing the pipeline
+
+---
+
+## 🚀 How It Works
 
 FigureWeave currently runs in five major stages:
 
@@ -95,7 +118,7 @@ FigureWeave currently runs in five major stages:
 
 ---
 
-## Supported Model Routing
+## ⚙️ Configuration
 
 ### Image draft provider
 
@@ -114,7 +137,7 @@ Anthropic Claude is used here for **understanding and reconstruction**, not for 
 
 ---
 
-## Web Interface
+### Web Interface
 
 Start the server:
 
@@ -148,7 +171,7 @@ The canvas page lets you:
 
 ---
 
-## CLI Usage
+## ⚡ Quick Start
 
 ### Basic
 
@@ -211,7 +234,7 @@ If local SAM3 is unavailable, the codebase can still fall back to other segmenta
 
 ---
 
-## Installation
+### Installation
 
 ### Python environment
 
@@ -284,31 +307,7 @@ When multi-candidate mode is enabled, each run is stored under:
 - `candidate_02/`
 - `candidate_03/`
 
----
-
-## Showcase
-
-The following assets are now used as the current project showcase example from the `multimodal_medical_report` run:
-
-1. Draft image: [`img/case/multimodal_medical_report_draft.png`](img/case/multimodal_medical_report_draft.png)
-2. Optimized SVG template: [`img/case/multimodal_medical_report_template.svg`](img/case/multimodal_medical_report_template.svg)
-3. Final assembled SVG: [`img/case/multimodal_medical_report_final.svg`](img/case/multimodal_medical_report_final.svg)
-
-<p align="center">
-  <img src="img/case/multimodal_medical_report_draft.png" alt="FigureWeave showcase draft" width="32%"/>
-  <img src="img/case/multimodal_medical_report_template.svg" alt="FigureWeave showcase optimized template" width="32%"/>
-  <img src="img/case/multimodal_medical_report_final.svg" alt="FigureWeave showcase final svg" width="32%"/>
-</p>
-
-This trio highlights the intended FigureWeave workflow:
-
-- `figure.png` as the model-generated draft
-- `optimized_template.svg` as the editable structural reconstruction
-- `final.svg` as the assembled showcase result
-
----
-
-## Credits
+---`r`n`r`n## Credits
 
 FigureWeave is **inspired by AutoFigure** and builds on the broader idea of converting scientific method descriptions into figure drafts.
 
@@ -325,4 +324,8 @@ The current project extends that direction with a more editing-oriented and depl
 ## License
 
 This repository currently keeps the existing project license in [`LICENSE`](LICENSE).
+
+
+
+
 
