@@ -7,9 +7,30 @@
 **从方法文本到可编辑科研插图**
 
 <p align="center">
-  <img alt="Gemini" src="https://img.shields.io/badge/Gemini-4285F4?style=for-the-badge&labelColor=F8F5EF&color=4285F4"/>
-  <img alt="Claude" src="https://img.shields.io/badge/Claude-D97706?style=for-the-badge&labelColor=F8F5EF&color=D97706"/>
-  <img alt="OpenAI" src="https://img.shields.io/badge/OpenAI-111827?style=for-the-badge&labelColor=F8F5EF&color=111827"/>
+  <a href="requirements.txt">
+    <img alt="Python 3.10+" src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white"/>
+  </a>
+  <a href="LICENSE">
+    <img alt="License Apache 2.0" src="https://img.shields.io/badge/License-Apache%202.0-4F46E5?style=flat-square"/>
+  </a>
+  <a href="#local-sam3">
+    <img alt="GPU Local SAM3" src="https://img.shields.io/badge/GPU-Local%20SAM3-16A34A?style=flat-square&logo=nvidia&logoColor=white"/>
+  </a>
+  <a href="#local-sam3">
+    <img alt="CUDA Recommended" src="https://img.shields.io/badge/CUDA-Recommended-65A30D?style=flat-square"/>
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://ai.google.dev/gemini-api/docs" target="_blank" rel="noopener noreferrer">
+    <img alt="Gemini" src="https://img.shields.io/badge/Gemini-??%20%26%20SVG-4285F4?style=flat-square"/>
+  </a>
+  <a href="https://platform.openai.com/docs/overview" target="_blank" rel="noopener noreferrer">
+    <img alt="OpenAI" src="https://img.shields.io/badge/OpenAI-??%20%26%20SVG-111827?style=flat-square"/>
+  </a>
+  <a href="https://docs.anthropic.com/" target="_blank" rel="noopener noreferrer">
+    <img alt="Claude" src="https://img.shields.io/badge/Claude-SVG%20??-D97706?style=flat-square"/>
+  </a>
 </p>
 
 [English](README.md) | [中文](README_ZH.md)
