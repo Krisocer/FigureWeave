@@ -18,6 +18,8 @@
 
 ---
 
+<img alt="Overview" src="https://img.shields.io/badge/Overview-EADBC8?style=flat-square&labelColor=F8F5EF&color=EADBC8"/>
+
 ## Overview
 
 FigureWeave is a research-engineering project for turning paper method descriptions into publication-style figures that remain editable as SVG.
@@ -42,6 +44,8 @@ FigureWeave is especially useful for:
 It is **not** intended to replace precise plotting tools such as matplotlib, seaborn, ggplot, or Origin for charts driven by exact numeric data.
 
 ---
+
+<img alt="What’s New" src="https://img.shields.io/badge/What’s%20New-D9C7B0?style=flat-square&labelColor=F8F5EF&color=D9C7B0"/>
 
 ## What Is New In FigureWeave
 
@@ -70,6 +74,8 @@ Compared with the original AutoFigure-style workflow, this project adds several 
 
 ---
 
+<img alt="Showcase" src="https://img.shields.io/badge/Showcase-E6D5C3?style=flat-square&labelColor=F8F5EF&color=E6D5C3"/>
+
 ## 🎨 Gallery: Editable Vectorization & Style Transfer
 
 The following assets are used as the current FigureWeave showcase from the `multimodal_medical_report` run:
@@ -92,6 +98,8 @@ This showcase highlights the intended FigureWeave workflow:
 
 ---
 
+<img alt="UI Preview" src="https://img.shields.io/badge/UI%20Preview-E5DDD1?style=flat-square&labelColor=F8F5EF&color=E5DDD1"/>
+
 ## 🖥️ UI Preview
 
 The browser-based FigureWeave interface for configuring providers, reviewing artifacts, and launching editable figure generation:
@@ -103,6 +111,8 @@ The browser-based FigureWeave interface for configuring providers, reviewing art
 </p>
 
 ---
+
+<img alt="Pipeline" src="https://img.shields.io/badge/Pipeline-D8E3DA?style=flat-square&labelColor=F8F5EF&color=D8E3DA"/>
 
 ## 🚀 How It Works
 
@@ -130,6 +140,8 @@ FigureWeave currently runs in five major stages:
 
 ---
 
+<img alt="Configuration" src="https://img.shields.io/badge/Configuration-D8E0EA?style=flat-square&labelColor=F8F5EF&color=D8E0EA"/>
+
 ## ⚙️ Configuration
 
 ### Provider Labels
@@ -156,6 +168,8 @@ FigureWeave currently runs in five major stages:
 Anthropic Claude is used here for **understanding and reconstruction**, not for native image generation. In this project, the image drafting stage should use Gemini or OpenAI.
 
 ---
+
+<img alt="Web" src="https://img.shields.io/badge/Web-E1D7EB?style=flat-square&labelColor=F8F5EF&color=E1D7EB"/>
 
 ### Web Interface
 
@@ -190,6 +204,8 @@ The canvas page lets you:
 - open the result in the embedded SVG editor
 
 ---
+
+<img alt="Quick Start" src="https://img.shields.io/badge/Quick%20Start-F0D89D?style=flat-square&labelColor=F8F5EF&color=F0D89D"/>
 
 ## ⚡ Quick Start
 
@@ -232,7 +248,9 @@ python figureweave.py \
 
 ---
 
-## Local SAM3
+<img alt="Local SAM3" src="https://img.shields.io/badge/Local%20SAM3-D2E5D7?style=flat-square&labelColor=F8F5EF&color=D2E5D7"/>
+
+## 🧩 Local SAM3
 
 FigureWeave supports local SAM3 execution on GPU.
 
@@ -254,13 +272,19 @@ If local SAM3 is unavailable, the codebase can still fall back to other segmenta
 
 ---
 
-### Installation
+<img alt="Installation" src="https://img.shields.io/badge/Installation-E4DED3?style=flat-square&labelColor=F8F5EF&color=E4DED3"/>
+
+## ??? Installation
+
+<img alt="Python" src="https://img.shields.io/badge/Python-E8E1D7?style=flat-square&labelColor=F8F5EF&color=E8E1D7"/>
 
 ### Python environment
 
 ```bash
 pip install -r requirements.txt
 ```
+
+<img alt="Env" src="https://img.shields.io/badge/Env-E7DFD4?style=flat-square&labelColor=F8F5EF&color=E7DFD4"/>
 
 ### Environment variables
 
@@ -279,7 +303,9 @@ Depending on your selected routing, you may also need:
 
 ---
 
-## Docker
+<img alt="Docker" src="https://img.shields.io/badge/Docker-D6E3F0?style=flat-square&labelColor=F8F5EF&color=D6E3F0"/>
+
+## 🐳 Docker
 
 Build and run:
 
@@ -308,7 +334,9 @@ docker compose restart figureweave
 
 ---
 
-## Output Structure
+<img alt="Artifacts" src="https://img.shields.io/badge/Artifacts-E3DDD0?style=flat-square&labelColor=F8F5EF&color=E3DDD0"/>
+
+## 📦 Output Structure
 
 Typical outputs include:
 
@@ -327,7 +355,11 @@ When multi-candidate mode is enabled, each run is stored under:
 - `candidate_02/`
 - `candidate_03/`
 
----`r`n`r`n## Credits
+---
+
+<img alt="Credits" src="https://img.shields.io/badge/Credits-E7DCC8?style=flat-square&labelColor=F8F5EF&color=E7DCC8"/>
+
+## 🙏 Credits
 
 FigureWeave is **inspired by AutoFigure** and builds on the broader idea of converting scientific method descriptions into figure drafts.
 
@@ -341,9 +373,12 @@ The current project extends that direction with a more editing-oriented and depl
 
 ---
 
-## License
+<img alt="License" src="https://img.shields.io/badge/License-DED7CC?style=flat-square&labelColor=F8F5EF&color=DED7CC"/>
+
+## 📄 License
 
 This repository currently keeps the existing project license in [`LICENSE`](LICENSE).
+
 
 
 
