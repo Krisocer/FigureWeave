@@ -77,7 +77,6 @@ The following assets are used as the current FigureWeave showcase from the `mult
 1. Draft image: [img/case/multimodal_medical_report_draft.png](img/case/multimodal_medical_report_draft.png)
 2. Optimized SVG template: [img/case/multimodal_medical_report_template.svg](img/case/multimodal_medical_report_template.svg)
 3. Final assembled SVG: [img/case/multimodal_medical_report_final.svg](img/case/multimodal_medical_report_final.svg)
-4. UI snapshot: [img/case/UI.png](img/case/UI.png)
 
 <p align="center">
   <img src="img/case/multimodal_medical_report_draft.png" alt="FigureWeave showcase draft" width="32%"/>
@@ -85,16 +84,23 @@ The following assets are used as the current FigureWeave showcase from the `mult
   <img src="img/case/multimodal_medical_report_final.svg" alt="FigureWeave showcase final svg" width="32%"/>
 </p>
 
-<p align="center">
-  <img src="img/case/UI.png" alt="FigureWeave UI showcase" width="88%"/>
-</p>
-
 This showcase highlights the intended FigureWeave workflow:
 
 - `figure.png` as the model-generated draft
 - `optimized_template.svg` as the editable structural reconstruction
 - `final.svg` as the assembled showcase result
-- `UI.png` as the browser-based authoring interface for configuring and reviewing the pipeline
+
+---
+
+## 🖥️ UI Preview
+
+The browser-based FigureWeave interface for configuring providers, reviewing artifacts, and launching editable figure generation:
+
+1. UI snapshot: [img/case/UI.png](img/case/UI.png)
+
+<p align="center">
+  <img src="img/case/UI.png" alt="FigureWeave UI showcase" width="88%"/>
+</p>
 
 ---
 
@@ -338,6 +344,10 @@ The current project extends that direction with a more editing-oriented and depl
 ## License
 
 This repository currently keeps the existing project license in [`LICENSE`](LICENSE).
+
+
+
+
 
 
 
