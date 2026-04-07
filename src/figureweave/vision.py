@@ -16,7 +16,9 @@ from transformers import AutoModelForImageSegmentation
 
 from .config import (
     BOXLIB_NO_ICON_MODE_KEY,
+    COMPLEX_PAPER_PROMPT_TEMPLATE,
     FLOWCHART_STYLE_PROMPT,
+    FigureMode,
     PAPER_FLOWCHART_PROMPT_TEMPLATE,
     GEMINI_DEFAULT_IMAGE_SIZE,
     LOCAL_DETECTOR_MAX_BOX_AREA_RATIO,
@@ -43,6 +45,7 @@ def generate_figure_from_method(
     model: str,
     base_url: str,
     provider: ProviderType,
+    figure_mode: FigureMode = "simple_flowchart",
     figure_caption: Optional[str] = None,
     use_reference_image: Optional[bool] = None,
     reference_image_path: Optional[str] = None,
@@ -90,7 +93,11 @@ Stay with a sparse flowchart layout and avoid extra raster insets unless they ar
     else:
         figure_caption_block = ""
 
-    base_flowchart_prompt = PAPER_FLOWCHART_PROMPT_TEMPLATE.format(
+    prompt_template = PAPER_FLOWCHART_PROMPT_TEMPLATE
+    if figure_mode == "complex_paper":
+        prompt_template = COMPLEX_PAPER_PROMPT_TEMPLATE
+
+    base_flowchart_prompt = prompt_template.format(
         flowchart_style_prompt=FLOWCHART_STYLE_PROMPT,
         method_text=method_text,
         figure_caption_block=figure_caption_block,

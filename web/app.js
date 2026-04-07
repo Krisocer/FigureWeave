@@ -4,6 +4,10 @@
     balanced: "gemini-3.1-flash-image-preview",
     max_quality: "gemini-3-pro-image-preview",
   };
+  const SAM_PROMPT_PRESETS = {
+    simple_flowchart: "plot,chart,heatmap,matrix,image",
+    complex_paper: "module,block,encoder,head,panel,plot,heatmap,matrix",
+  };
   const IMAGE_PROVIDER_CONFIGS = {
     gemini: {
       apiPlaceholder: "AIza...",
@@ -61,6 +65,7 @@
     const imageSizeInput = $("imageSize");
     const generationModeGroup = $("generationModeGroup");
     const generationModeInput = $("generationMode");
+    const figureModeInput = $("figureMode");
     const numCandidatesInput = $("numCandidates");
     const imageProviderInput = $("imageProvider");
     const imageProviderHint = $("imageProviderHint");
@@ -97,6 +102,7 @@
         svgApiKey: svgApiKeyInput?.value ?? "",
         optimizeIterations: $("optimizeIterations")?.value ?? "0",
         numCandidates: numCandidatesInput?.value ?? "1",
+        figureMode: figureModeInput?.value ?? "simple_flowchart",
         imageSize: imageSizeInput?.value ?? "2K",
         generationMode: generationModeInput?.value ?? "balanced",
         samBackend: samBackend?.value ?? "local",
@@ -150,6 +156,9 @@
       }
       if (typeof state.numCandidates === "string" && numCandidatesInput) {
         numCandidatesInput.value = state.numCandidates;
+      }
+      if (typeof state.figureMode === "string" && figureModeInput) {
+        figureModeInput.value = state.figureMode;
       }
       if (typeof state.imageSize === "string" && imageSizeInput) {
         imageSizeInput.value = state.imageSize;
@@ -232,11 +241,23 @@
       saveInputState();
     }
 
+    function syncFigureModeDefaults() {
+      if (!figureModeInput || !samPrompt) {
+        return;
+      }
+      samPrompt.value =
+        SAM_PROMPT_PRESETS[figureModeInput.value] || SAM_PROMPT_PRESETS.simple_flowchart;
+      saveInputState();
+    }
+
     applyInputState();
 
     if (samBackend) {
       samBackend.addEventListener("change", syncSamApiKeyVisibility);
       syncSamApiKeyVisibility();
+    }
+    if (figureModeInput) {
+      figureModeInput.addEventListener("change", syncFigureModeDefaults);
     }
     if (imageProviderInput) {
       imageProviderInput.addEventListener("change", syncImageSizeVisibility);
@@ -292,6 +313,7 @@
       svgApiKeyInput,
       $("optimizeIterations"),
       numCandidatesInput,
+      figureModeInput,
       $("imageSize"),
       generationModeInput,
       samPrompt,
@@ -328,6 +350,7 @@
       const payload = {
         method_text: methodText,
         figure_caption: figureCaption?.value.trim() || null,
+        figure_mode: figureModeInput?.value || "simple_flowchart",
         provider: "gemini",
         image_provider: (IMAGE_PROVIDER_CONFIGS[imageProviderKey] || IMAGE_PROVIDER_CONFIGS.gemini).imageProvider,
         image_api_key: resolvedImageApiKey || null,

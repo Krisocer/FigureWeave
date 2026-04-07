@@ -39,10 +39,12 @@ PROVIDER_CONFIGS = {
 
 ProviderType = Literal['openrouter', 'bianxie', 'gemini', 'openai', 'anthropic']
 PlaceholderMode = Literal['none', 'box', 'label']
+FigureMode = Literal['simple_flowchart', 'complex_paper']
 GEMINI_DEFAULT_IMAGE_SIZE = '2K'
 IMAGE_SIZE_CHOICES = ('1K', '2K', '4K')
 BOXLIB_NO_ICON_MODE_KEY = 'no_icon_mode'
 DEFAULT_SAM_PROMPT = 'plot,chart,heatmap,matrix,image'
+COMPLEX_PAPER_SAM_PROMPT = 'module,block,encoder,head,panel,plot,heatmap,matrix'
 GEMINI_IMAGE_MAX_RETRIES = max(1, int(os.environ.get('GEMINI_IMAGE_MAX_RETRIES', '4')))
 GEMINI_IMAGE_RETRY_BASE_DELAY = float(os.environ.get('GEMINI_IMAGE_RETRY_BASE_DELAY', '15'))
 SVG_MAX_PLACEHOLDERS = max(1, int(os.environ.get('FIGUREWEAVE_MAX_PLACEHOLDERS', '10')))
@@ -89,6 +91,22 @@ Additional layout guidance:
 - Do not add humans, robots, mascots, animals, hands, or decorative stickers.
 - Do not insert extra example photos unless the method explicitly depends on image crops as an input modality.
 - If the source text is long, compress it into the minimal set of modules needed to explain the workflow.
+
+Method text:
+{method_text}
+{figure_caption_block}"""
+
+COMPLEX_PAPER_PROMPT_TEMPLATE = """Generate a publication-style machine learning paper figure for the method below.
+
+{flowchart_style_prompt}
+
+Additional layout guidance for complex paper figures:
+- Preserve the full scientific structure when it is essential, including nested subpanels, auxiliary branches, loss terms, legends, and small statistical plots.
+- Keep the figure organized into clearly separated regions or stages, but do not over-compress if the method genuinely requires multiple submodules.
+- Prioritize fidelity to module names, formulas, arrows, brackets, heatmaps, token strips, bar charts, and panel boundaries.
+- Use clean paper-style visuals rather than illustrative icons.
+- Prefer abstract diagrams, matrices, distributions, and plots over decorative imagery.
+- If the method includes image inputs, keep them as small task-relevant insets only when necessary.
 
 Method text:
 {method_text}

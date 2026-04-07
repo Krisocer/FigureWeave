@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 from pathlib import Path
 from typing import Optional
 
 from PIL import Image
 
-from .config import PlaceholderMode, ProviderType
+from .config import FigureMode, PlaceholderMode, ProviderType
 from .llm import call_llm_multimodal, call_llm_text
 
 def generate_svg_template(
@@ -19,6 +20,7 @@ def generate_svg_template(
     model: str,
     base_url: str,
     provider: ProviderType,
+    figure_mode: FigureMode = "simple_flowchart",
     figure_caption: Optional[str] = None,
     placeholder_mode: PlaceholderMode = "label",
     no_icon_mode: bool = False,
@@ -53,6 +55,14 @@ def generate_svg_template(
 Figure caption / intent:
 {figure_caption}
 """
+    complex_context = ""
+    if figure_mode == "complex_paper":
+        complex_context = """
+
+Complex paper figure guidance:
+- Preserve nested panel structure, dashed grouping boxes, legends, and auxiliary branches when present.
+- Reproduce formulas, brackets, small charts, heatmaps, and tiny labels as faithfully as possible.
+- Prefer exact scientific layout fidelity over simplifying the figure."""
 
     if no_icon_mode:
         prompt_text = f"""编写 SVG 代码来尽可能像素级复现这张图片。
@@ -75,6 +85,7 @@ Image reference notes:
 - Image 1 is the original target figure.
 - Image 2 is the SAM reference image. It does not contain any valid icon placeholder boxes for this run.
 {caption_context}
+{complex_context}
 
 Please output ONLY the SVG code, starting with <svg and ending with </svg>. Do not include any explanation or markdown formatting."""
     else:
@@ -94,6 +105,8 @@ CRITICAL DIMENSION REQUIREMENT:
 Figure caption / intent:
 {figure_caption}
 """
+        if complex_context:
+            base_prompt += f"\n{complex_context}\n"
 
     if not no_icon_mode and placeholder_mode == "box":
         # box 模式：传入 boxlib 坐标
@@ -674,6 +687,7 @@ def optimize_svg_with_llm(
     max_iterations: int = 2,
     skip_base64_validation: bool = False,
     no_icon_mode: bool = False,
+    figure_mode: FigureMode = "simple_flowchart",
 ) -> str:
     """
     使用 LLM 优化 SVG，使其与原图更加对齐
@@ -770,6 +784,9 @@ Please carefully compare and optimize:
 - No valid icon placeholders exist for this figure
 - Do NOT add gray rectangles, AF labels, placeholder groups, or synthetic icon boxes
 - Focus on position and style corrections"""
+            if figure_mode == "complex_paper":
+                prompt += """
+- Treat this as a complex paper figure: preserve nested panels, dashed boxes, formulas, brackets, legends, and small plots whenever they appear in the original."""
         else:
             prompt = f"""You are an expert SVG optimizer. Compare the current SVG rendering with the original figure and optimize the SVG code to better match the original.
 

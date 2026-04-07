@@ -11,6 +11,7 @@ from PIL import Image
 
 from .config import (
     DEFAULT_SAM_PROMPT,
+    FigureMode,
     GEMINI_DEFAULT_IMAGE_SIZE,
     PROVIDER_CONFIGS,
     PlaceholderMode,
@@ -45,6 +46,7 @@ def method_to_svg(
     image_gen_model: str = None,
     svg_gen_model: str = None,
     sam_prompts: str = DEFAULT_SAM_PROMPT,
+    figure_mode: FigureMode = "simple_flowchart",
     min_score: float = 0.5,
     sam_backend: Literal["local", "fal", "roboflow", "api"] = "local",
     sam_api_key: Optional[str] = None,
@@ -124,6 +126,7 @@ def method_to_svg(
     print(f"生图模型: {image_gen_model}")
     print(f"SVG模型: {svg_gen_model}")
     print(f"SAM提示词: {sam_prompts}")
+    print(f"Figure mode: {figure_mode}")
     print(f"最低置信度: {min_score}")
     sam_backend_value = "fal" if sam_backend == "api" else sam_backend
     print(f"SAM后端: {sam_backend_value}")
@@ -148,6 +151,7 @@ def method_to_svg(
         model=image_gen_model,
         base_url=image_base_url,
         provider=image_provider,
+        figure_mode=figure_mode,
         figure_caption=figure_caption,
         image_size=image_size,
     )
@@ -245,6 +249,7 @@ def method_to_svg(
             model=svg_gen_model,
             base_url=svg_base_url,
             provider=svg_provider,
+            figure_mode=figure_mode,
             figure_caption=figure_caption,
             placeholder_mode=placeholder_mode,
             no_icon_mode=no_icon_mode,
@@ -263,6 +268,7 @@ def method_to_svg(
             max_iterations=optimize_iterations,
             skip_base64_validation=True,
             no_icon_mode=no_icon_mode,
+            figure_mode=figure_mode,
         )
     except Exception as exc:
         if not no_icon_mode:

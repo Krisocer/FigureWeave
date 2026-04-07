@@ -124,14 +124,25 @@
 
             <div class="field-grid">
               <div class="field-group">
-                <label class="field-label" for="optimizeIterations">Optimize</label>
-                <input id="optimizeIterations" class="input" type="number" min="0" value="0" />
+                <label class="field-label" for="figureMode">Figure Mode</label>
+                <select id="figureMode" class="input">
+                  <option value="simple_flowchart" selected>Simple Flowchart</option>
+                  <option value="complex_paper">Complex Paper Figure</option>
+                </select>
+                <div class="hint">
+                  Use Complex Paper Figure for dense method diagrams with nested panels, formulas, and small plots.
+                </div>
               </div>
 
               <div class="field-group">
-                <label class="field-label" for="numCandidates">Candidates</label>
-                <input id="numCandidates" class="input" type="number" min="1" max="8" value="1" />
+                <label class="field-label" for="optimizeIterations">Optimize</label>
+                <input id="optimizeIterations" class="input" type="number" min="0" value="0" />
               </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="numCandidates">Candidates</label>
+              <input id="numCandidates" class="input" type="number" min="1" max="8" value="1" />
             </div>
 
             <div class="field-group" id="imageSizeGroup">

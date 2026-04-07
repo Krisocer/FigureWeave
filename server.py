@@ -34,6 +34,7 @@ UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 PYTHON_EXECUTABLE = os.environ.get("AUTOFIGURE_PYTHON") or sys.executable
 
 DEFAULT_SAM_PROMPT = "plot,chart,heatmap,matrix,image"
+COMPLEX_PAPER_SAM_PROMPT = "module,block,encoder,head,panel,plot,heatmap,matrix"
 DEFAULT_PLACEHOLDER_MODE = "label"
 DEFAULT_MERGE_THRESHOLD = 0.01
 
@@ -107,6 +108,7 @@ class RunRequest(BaseModel):
     image_model: Optional[str] = None
     image_size: Optional[str] = None
     svg_model: Optional[str] = None
+    figure_mode: Optional[str] = None
     sam_prompt: Optional[str] = None
     sam_backend: Optional[str] = None
     sam_api_key: Optional[str] = None
@@ -176,12 +178,16 @@ def run_job(req: RunRequest) -> JSONResponse:
     if req.svg_model:
         cmd += ["--svg_model", req.svg_model]
 
-    sam_prompt = req.sam_prompt or DEFAULT_SAM_PROMPT
+    figure_mode = req.figure_mode or "simple_flowchart"
+    sam_prompt = req.sam_prompt or (
+        COMPLEX_PAPER_SAM_PROMPT if figure_mode == "complex_paper" else DEFAULT_SAM_PROMPT
+    )
     placeholder_mode = req.placeholder_mode or DEFAULT_PLACEHOLDER_MODE
     merge_threshold = (
         req.merge_threshold if req.merge_threshold is not None else DEFAULT_MERGE_THRESHOLD
     )
 
+    cmd += ["--figure_mode", figure_mode]
     cmd += ["--sam_prompt", sam_prompt]
     cmd += ["--placeholder_mode", placeholder_mode]
     cmd += ["--merge_threshold", str(merge_threshold)]
