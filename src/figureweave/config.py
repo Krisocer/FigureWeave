@@ -42,6 +42,7 @@ PlaceholderMode = Literal['none', 'box', 'label']
 GEMINI_DEFAULT_IMAGE_SIZE = '2K'
 IMAGE_SIZE_CHOICES = ('1K', '2K', '4K')
 BOXLIB_NO_ICON_MODE_KEY = 'no_icon_mode'
+DEFAULT_SAM_PROMPT = 'plot,chart,heatmap,matrix,image'
 GEMINI_IMAGE_MAX_RETRIES = max(1, int(os.environ.get('GEMINI_IMAGE_MAX_RETRIES', '4')))
 GEMINI_IMAGE_RETRY_BASE_DELAY = float(os.environ.get('GEMINI_IMAGE_RETRY_BASE_DELAY', '15'))
 SVG_MAX_PLACEHOLDERS = max(1, int(os.environ.get('FIGUREWEAVE_MAX_PLACEHOLDERS', '10')))
@@ -71,4 +72,24 @@ Hard constraints:
 - Keep the composition sparse and easy to reconstruct as SVG.
 - Avoid human characters, mascots, faces, hands, animals, or photorealistic scenes.
 - Avoid unnecessary decorative icons, textured backgrounds, and visual clutter.
-- Use a paper-figure style with thin borders, readable labels, and restrained colors."""
+- Use a paper-figure style with thin borders, readable labels, and restrained colors.
+- Prefer abstract blocks, plots, matrices, and heatmaps over pictorial stickers or illustrative avatars.
+- Only use image crops or raster insets when they are essential to explain the method."""
+
+PAPER_FLOWCHART_PROMPT_TEMPLATE = """Generate a clean academic paper figure for the method below.
+
+{flowchart_style_prompt}
+
+Additional layout guidance:
+- Keep the figure compact and modular.
+- Prefer three major stages or fewer.
+- Show only the essential modules, arrows, plots, and labels needed to explain the pipeline.
+- Favor module-level structure over small decorative subcomponents.
+- Prefer abstract scientific visuals such as blocks, matrices, distributions, token bars, and plots.
+- Do not add humans, robots, mascots, animals, hands, or decorative stickers.
+- Do not insert extra example photos unless the method explicitly depends on image crops as an input modality.
+- If the source text is long, compress it into the minimal set of modules needed to explain the workflow.
+
+Method text:
+{method_text}
+{figure_caption_block}"""

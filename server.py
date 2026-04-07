@@ -33,7 +33,7 @@ UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 PYTHON_EXECUTABLE = os.environ.get("AUTOFIGURE_PYTHON") or sys.executable
 
-DEFAULT_SAM_PROMPT = "icon,person,robot,animal"
+DEFAULT_SAM_PROMPT = "plot,chart,heatmap,matrix,image"
 DEFAULT_PLACEHOLDER_MODE = "label"
 DEFAULT_MERGE_THRESHOLD = 0.01
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .config import GEMINI_DEFAULT_IMAGE_SIZE, IMAGE_SIZE_CHOICES
+from .config import DEFAULT_SAM_PROMPT, GEMINI_DEFAULT_IMAGE_SIZE, IMAGE_SIZE_CHOICES
 from . import vision
 from .pipeline import method_to_svg_candidates
 
@@ -60,7 +60,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument('--reference_image_path', default=None, help='??????????')
     parser.add_argument('--figure_caption', default=None, help='Figure caption / figure brief????')
 
-    parser.add_argument('--sam_prompt', default='icon,robot,animal,person', help="SAM3 ?????????????prompt?? 'icon,diagram,arrow'???: icon?")
+    parser.add_argument('--sam_prompt', default=DEFAULT_SAM_PROMPT, help="SAM3 ?????????????prompt?? 'plot,chart,heatmap,matrix,image'???: plot,chart,heatmap,matrix,image?")
     parser.add_argument('--min_score', type=float, default=0.0, help='SAM3 ??????????: 0.0?')
     parser.add_argument(
         '--sam_backend',

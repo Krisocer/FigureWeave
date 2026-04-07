@@ -100,7 +100,7 @@
         imageSize: imageSizeInput?.value ?? "2K",
         generationMode: generationModeInput?.value ?? "balanced",
         samBackend: samBackend?.value ?? "local",
-        samPrompt: samPrompt?.value ?? "icon,person,robot,animal",
+        samPrompt: samPrompt?.value ?? "plot,chart,heatmap,matrix,image",
         samApiKey: samApiKeyInput?.value ?? "",
         referencePath: uploadedReferencePath,
         referenceUrl: referencePreview?.src ?? "",

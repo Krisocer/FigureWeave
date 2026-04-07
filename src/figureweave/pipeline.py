@@ -9,7 +9,13 @@ from typing import Literal, Optional
 
 from PIL import Image
 
-from .config import GEMINI_DEFAULT_IMAGE_SIZE, PROVIDER_CONFIGS, PlaceholderMode, ProviderType
+from .config import (
+    DEFAULT_SAM_PROMPT,
+    GEMINI_DEFAULT_IMAGE_SIZE,
+    PROVIDER_CONFIGS,
+    PlaceholderMode,
+    ProviderType,
+)
 from .svg_ops import (
     calculate_scale_factors,
     check_and_fix_svg,
@@ -17,7 +23,12 @@ from .svg_ops import (
     optimize_svg_with_llm,
     replace_icons_in_svg,
 )
-from .vision import crop_and_remove_background, generate_figure_from_method, segment_with_sam3
+from .vision import (
+    _ensure_rmbg2_access_ready,
+    crop_and_remove_background,
+    generate_figure_from_method,
+    segment_with_sam3,
+)
 
 def method_to_svg(
     method_text: str,
@@ -33,7 +44,7 @@ def method_to_svg(
     svg_base_url: Optional[str] = None,
     image_gen_model: str = None,
     svg_gen_model: str = None,
-    sam_prompts: str = "icon",
+    sam_prompts: str = DEFAULT_SAM_PROMPT,
     min_score: float = 0.5,
     sam_backend: Literal["local", "fal", "roboflow", "api"] = "local",
     sam_api_key: Optional[str] = None,
@@ -150,6 +161,8 @@ def method_to_svg(
             "samed_path": None,
             "boxlib_path": None,
             "icon_infos": [],
+            "placeholder_count": 0,
+            "no_icon_mode": True,
             "template_svg_path": None,
             "optimized_template_path": None,
             "final_svg_path": None,
@@ -182,6 +195,8 @@ def method_to_svg(
             "samed_path": samed_path,
             "boxlib_path": boxlib_path,
             "icon_infos": [],
+            "placeholder_count": len(valid_boxes),
+            "no_icon_mode": no_icon_mode,
             "template_svg_path": None,
             "optimized_template_path": None,
             "final_svg_path": None,
@@ -209,6 +224,8 @@ def method_to_svg(
             "samed_path": samed_path,
             "boxlib_path": boxlib_path,
             "icon_infos": icon_infos,
+            "placeholder_count": len(valid_boxes),
+            "no_icon_mode": no_icon_mode,
             "template_svg_path": None,
             "optimized_template_path": None,
             "final_svg_path": None,
@@ -265,6 +282,8 @@ def method_to_svg(
             "samed_path": samed_path,
             "boxlib_path": boxlib_path,
             "icon_infos": icon_infos,
+            "placeholder_count": len(valid_boxes),
+            "no_icon_mode": no_icon_mode,
             "template_svg_path": str(template_svg_path) if template_svg_path.is_file() else None,
             "optimized_template_path": str(optimized_template_path) if optimized_template_path.is_file() else None,
             "final_svg_path": None,
@@ -338,6 +357,8 @@ def method_to_svg(
         "samed_path": samed_path,
         "boxlib_path": boxlib_path,
         "icon_infos": icon_infos,
+        "placeholder_count": len(valid_boxes),
+        "no_icon_mode": no_icon_mode,
         "template_svg_path": str(template_svg_path) if template_svg_path.is_file() else None,
         "optimized_template_path": str(optimized_template_path) if optimized_template_path.is_file() else None,
         "final_svg_path": str(final_svg_path),
@@ -395,6 +416,17 @@ def _copy_selected_candidate_outputs(candidate_dir: Path, output_dir: Path) -> N
         shutil.copytree(src_icons, dst_icons)
 
 
+def _candidate_selection_key(summary: dict) -> tuple:
+    """Prefer true SVG reconstructions with fewer raster placeholders and fewer extracted icons."""
+    has_template_svg = bool(summary.get("has_template_svg"))
+    return (
+        0 if has_template_svg else 1,
+        int(summary.get("icon_count", 0)),
+        int(summary.get("placeholder_count", 0)),
+        summary.get("candidate_id", ""),
+    )
+
+
 def method_to_svg_candidates(
     method_text: str,
     output_dir: str = "./output",
@@ -424,6 +456,12 @@ def method_to_svg_candidates(
                     "candidate_id": "candidate_01",
                     "status": "ok",
                     "icon_count": len(selected_result.get("icon_infos", [])),
+                    "placeholder_count": int(selected_result.get("placeholder_count", 0)),
+                    "no_icon_mode": bool(selected_result.get("no_icon_mode", False)),
+                    "has_template_svg": bool(
+                        selected_result.get("template_svg_path")
+                        or selected_result.get("optimized_template_path")
+                    ),
                     "final_svg_path": selected_result.get("final_svg_path"),
                 }
             ],
@@ -461,6 +499,11 @@ def method_to_svg_candidates(
                 "candidate_id": candidate_id,
                 "status": "ok",
                 "icon_count": len(result.get("icon_infos", [])),
+                "placeholder_count": int(result.get("placeholder_count", 0)),
+                "no_icon_mode": bool(result.get("no_icon_mode", False)),
+                "has_template_svg": bool(
+                    result.get("template_svg_path") or result.get("optimized_template_path")
+                ),
                 "final_svg_path": result.get("final_svg_path"),
                 "figure_path": result.get("figure_path"),
             }
@@ -483,16 +526,16 @@ def method_to_svg_candidates(
     if not successful:
         raise RuntimeError("所有候选都生成失败")
 
-    selected_summary, selected_result, selected_dir = max(
+    selected_summary, selected_result, selected_dir = min(
         successful,
-        key=lambda item: (item[0].get("icon_count", 0), item[0].get("candidate_id", "")),
+        key=lambda item: _candidate_selection_key(item[0]),
     )
     _copy_selected_candidate_outputs(selected_dir, output_dir_path)
 
     manifest = {
         "num_candidates": num_candidates,
         "selected_candidate": selected_summary["candidate_id"],
-        "selection_rule": "max_icon_count_then_latest_id",
+        "selection_rule": "prefer_true_svg_then_min_icon_count_then_min_placeholder_count_then_earliest_id",
         "candidates": candidates,
     }
     manifest_path = output_dir_path / "candidates_manifest.json"

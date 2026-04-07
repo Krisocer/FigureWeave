@@ -17,6 +17,7 @@ from transformers import AutoModelForImageSegmentation
 from .config import (
     BOXLIB_NO_ICON_MODE_KEY,
     FLOWCHART_STYLE_PROMPT,
+    PAPER_FLOWCHART_PROMPT_TEMPLATE,
     GEMINI_DEFAULT_IMAGE_SIZE,
     LOCAL_DETECTOR_MAX_BOX_AREA_RATIO,
     LOCAL_DETECTOR_MIN_SCORE,
@@ -78,6 +79,23 @@ def generate_figure_from_method(
     if reference_image_path:
         use_reference_image = True
 
+    if figure_caption:
+        figure_caption_block = f"""
+
+Figure caption / figure brief:
+{figure_caption}
+
+Use the caption to decide the most important modules, labels, and flow directions to show.
+Stay with a sparse flowchart layout and avoid extra raster insets unless they are semantically necessary."""
+    else:
+        figure_caption_block = ""
+
+    base_flowchart_prompt = PAPER_FLOWCHART_PROMPT_TEMPLATE.format(
+        flowchart_style_prompt=FLOWCHART_STYLE_PROMPT,
+        method_text=method_text,
+        figure_caption_block=figure_caption_block,
+    )
+
     reference_image = None
     if use_reference_image:
         if not reference_image_path:
@@ -105,40 +123,9 @@ Only the visual style should be consistent.
 
 The goal is that the figure looks like it was drawn by the same illustrator using the same visual design language as the reference figure.
 
-{FLOWCHART_STYLE_PROMPT}
-
-Below is the method section of the paper:
-\"\"\"
-{method_text}
-\"\"\""""
-        if figure_caption:
-            prompt += f"""
-
-The target figure should also satisfy this figure caption / figure brief:
-{figure_caption}"""
+{base_flowchart_prompt}"""
     else:
-        prompt = f"""Generate a professional academic paper figure to visualize the method below.
-
-{FLOWCHART_STYLE_PROMPT}
-
-Additional preferences:
-- Show only the essential modules and arrows.
-- Favor module-level structure over small decorative subcomponents.
-- Keep labels concise and readable.
-- If the method sounds complicated, summarize it into three primary stages in the figure.
-
-Below is the method section of this paper:
-
-{method_text}
-"""
-        if figure_caption:
-            prompt += f"""
-
-The target figure caption / figure brief is:
-{figure_caption}
-
-Use the caption to decide the most important modules, labels, and flow directions to show.
-Stay with a sparse flowchart layout and avoid extra icons unless they are necessary to convey the pipeline."""
+        prompt = base_flowchart_prompt
 
     print(f"发送请求到: {base_url}")
 
