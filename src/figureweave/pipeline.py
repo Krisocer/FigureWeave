@@ -17,10 +17,12 @@ from .config import (
     PlaceholderMode,
     ProviderType,
 )
+from .drawio_ops import export_drawio_from_svg, render_drawio_to_svg
 from .svg_ops import (
     calculate_scale_factors,
     check_and_fix_svg,
     generate_svg_template,
+    get_svg_dimensions,
     optimize_svg_with_llm,
     replace_icons_in_svg,
 )
@@ -58,6 +60,7 @@ def method_to_svg(
     merge_threshold: float = 0.9,
     image_size: str = GEMINI_DEFAULT_IMAGE_SIZE,
     figure_caption: Optional[str] = None,
+    enable_svg_reconstruction: bool = True,
 ) -> dict:
     """
     完整流程：Paper Method → SVG with Icons
@@ -138,6 +141,7 @@ def method_to_svg(
     print(f"Box合并阈值: {merge_threshold}")
     if figure_caption:
         print(f"Figure Caption: {figure_caption}")
+    print(f"SVG reconstruction: {'enabled' if enable_svg_reconstruction else 'disabled'}")
     if image_provider == "gemini":
         print(f"生图分辨率: {image_size}")
     print("=" * 60)
@@ -155,6 +159,25 @@ def method_to_svg(
         figure_caption=figure_caption,
         image_size=image_size,
     )
+
+    if not enable_svg_reconstruction:
+        print("\n" + "=" * 60)
+        print("SVG / DrawIO 重建已关闭：仅执行步骤一并输出 figure.png")
+        print("=" * 60)
+        return {
+            "figure_path": str(figure_path),
+            "samed_path": None,
+            "boxlib_path": None,
+            "icon_infos": [],
+            "placeholder_count": 0,
+            "no_icon_mode": True,
+            "template_svg_path": None,
+            "optimized_template_path": None,
+            "final_svg_path": None,
+            "final_drawio_path": None,
+            "scene_graph_path": None,
+            "llm_final_svg_path": None,
+        }
 
     if stop_after == 1:
         print("\n" + "=" * 60)
@@ -239,6 +262,9 @@ def method_to_svg(
     template_svg_path = output_dir / "template.svg"
     optimized_template_path = output_dir / "optimized_template.svg"
     final_svg_path = output_dir / "final.svg"
+    final_drawio_path = output_dir / "final.drawio"
+    llm_final_svg_path = output_dir / "llm_final.svg"
+    scene_graph_path = output_dir / "scene_graph.json"
     try:
         generate_svg_template(
             figure_path=str(figure_path),
@@ -293,6 +319,9 @@ def method_to_svg(
             "template_svg_path": str(template_svg_path) if template_svg_path.is_file() else None,
             "optimized_template_path": str(optimized_template_path) if optimized_template_path.is_file() else None,
             "final_svg_path": None,
+            "final_drawio_path": None,
+            "scene_graph_path": None,
+            "llm_final_svg_path": None,
         }
 
     svg_template_for_replace = optimized_template_path if optimized_template_path.is_file() else template_svg_path
@@ -347,6 +376,26 @@ def method_to_svg(
             match_by_label=(placeholder_mode == "label"),
         )
 
+    if final_svg_path.is_file():
+        try:
+            shutil.copyfile(final_svg_path, llm_final_svg_path)
+            export_drawio_from_svg(
+                str(llm_final_svg_path),
+                str(final_drawio_path),
+                page_name="FigureWeave",
+                figure_path=str(figure_path),
+                scene_graph_output_path=str(scene_graph_path),
+            )
+            render_drawio_to_svg(
+                str(final_drawio_path),
+                output_path=str(final_svg_path),
+            )
+            print(f"DrawIO XML: {final_drawio_path}")
+            print(f"Scene Graph: {scene_graph_path}")
+            print(f"LLM SVG Backup: {llm_final_svg_path}")
+        except Exception as exc:
+            print(f"警告: DrawIO 导出失败 ({exc})")
+
     print("\n" + "=" * 60)
     print("流程完成！")
     print("=" * 60)
@@ -357,6 +406,12 @@ def method_to_svg(
     print(f"SVG模板: {template_svg_path}")
     print(f"优化后模板: {optimized_template_path}")
     print(f"最终SVG: {final_svg_path}")
+    if final_drawio_path.is_file():
+        print(f"DrawIO XML: {final_drawio_path}")
+    if scene_graph_path.is_file():
+        print(f"Scene Graph: {scene_graph_path}")
+    if llm_final_svg_path.is_file():
+        print(f"LLM SVG Backup: {llm_final_svg_path}")
 
     return {
         "figure_path": str(figure_path),
@@ -368,6 +423,9 @@ def method_to_svg(
         "template_svg_path": str(template_svg_path) if template_svg_path.is_file() else None,
         "optimized_template_path": str(optimized_template_path) if optimized_template_path.is_file() else None,
         "final_svg_path": str(final_svg_path),
+        "final_drawio_path": str(final_drawio_path) if final_drawio_path.is_file() else None,
+        "scene_graph_path": str(scene_graph_path) if scene_graph_path.is_file() else None,
+        "llm_final_svg_path": str(llm_final_svg_path) if llm_final_svg_path.is_file() else None,
     }
 
 
@@ -407,6 +465,9 @@ def _copy_selected_candidate_outputs(candidate_dir: Path, output_dir: Path) -> N
         "template.svg",
         "optimized_template.svg",
         "final.svg",
+        "final.drawio",
+        "scene_graph.json",
+        "llm_final.svg",
     ]
     for filename in files_to_copy:
         src = candidate_dir / filename
@@ -469,6 +530,9 @@ def method_to_svg_candidates(
                         or selected_result.get("optimized_template_path")
                     ),
                     "final_svg_path": selected_result.get("final_svg_path"),
+                    "final_drawio_path": selected_result.get("final_drawio_path"),
+                    "scene_graph_path": selected_result.get("scene_graph_path"),
+                    "llm_final_svg_path": selected_result.get("llm_final_svg_path"),
                 }
             ],
         }
@@ -511,6 +575,9 @@ def method_to_svg_candidates(
                     result.get("template_svg_path") or result.get("optimized_template_path")
                 ),
                 "final_svg_path": result.get("final_svg_path"),
+                "final_drawio_path": result.get("final_drawio_path"),
+                "scene_graph_path": result.get("scene_graph_path"),
+                "llm_final_svg_path": result.get("llm_final_svg_path"),
                 "figure_path": result.get("figure_path"),
             }
             candidates.append(summary)

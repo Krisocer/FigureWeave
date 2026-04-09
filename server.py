@@ -14,7 +14,7 @@ import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, UploadFile, File
@@ -96,6 +96,7 @@ class Job:
 class RunRequest(BaseModel):
     method_text: str = Field(..., min_length=1)
     figure_caption: Optional[str] = None
+    enable_svg_reconstruction: bool = True
     provider: str = "gemini"
     api_key: Optional[str] = None
     base_url: Optional[str] = None
@@ -118,6 +119,11 @@ class RunRequest(BaseModel):
     optimize_iterations: Optional[int] = None
     reference_image_path: Optional[str] = None
     num_candidates: int = Field(default=1, ge=1, le=8)
+
+
+class SceneGraphUpdateRequest(BaseModel):
+    path: str = "scene_graph.json"
+    scene_graph: dict[str, Any]
 
 
 app = FastAPI()
@@ -157,6 +163,8 @@ def run_job(req: RunRequest) -> JSONResponse:
         cmd += ["--api_key", req.api_key]
     if req.figure_caption:
         cmd += ["--figure_caption", req.figure_caption]
+    if not req.enable_svg_reconstruction:
+        cmd += ["--disable_svg_reconstruction", "--stop_after", "1"]
     if req.base_url:
         cmd += ["--base_url", req.base_url]
     if req.image_provider:
@@ -293,16 +301,84 @@ def stream_events(job_id: str) -> StreamingResponse:
 
 @app.get("/api/artifacts/{job_id}/{path:path}")
 def get_artifact(job_id: str, path: str) -> FileResponse:
-    job = JOBS.get(job_id)
-    if not job:
-        raise HTTPException(status_code=404, detail="Job not found")
-
-    candidate = (job.output_dir / path).resolve()
-    if not str(candidate).startswith(str(job.output_dir.resolve())):
+    output_dir = _resolve_job_output_dir(job_id)
+    candidate = (output_dir / path).resolve()
+    if not str(candidate).startswith(str(output_dir.resolve())):
         raise HTTPException(status_code=400, detail="Invalid path")
     if not candidate.is_file():
         raise HTTPException(status_code=404, detail="File not found")
     return FileResponse(candidate)
+
+
+@app.get("/api/jobs/{job_id}/artifacts")
+def list_job_artifacts(job_id: str) -> JSONResponse:
+    output_dir = _resolve_job_output_dir(job_id)
+    return JSONResponse({"artifacts": _list_artifacts(output_dir, job_id)})
+
+
+@app.get("/api/scene-graph/{job_id}")
+def get_scene_graph(job_id: str, path: str = "scene_graph.json") -> JSONResponse:
+    output_dir = _resolve_job_output_dir(job_id)
+    candidate = (output_dir / path).resolve()
+    if not str(candidate).startswith(str(output_dir.resolve())):
+        raise HTTPException(status_code=400, detail="Invalid path")
+    if not candidate.is_file():
+        raise HTTPException(status_code=404, detail="Scene graph not found")
+    try:
+        payload = json.loads(candidate.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise HTTPException(status_code=500, detail=f"Invalid scene graph JSON: {exc}") from exc
+    return JSONResponse({"path": path, "scene_graph": payload})
+
+
+@app.post("/api/scene-graph/{job_id}")
+def save_scene_graph(job_id: str, req: SceneGraphUpdateRequest) -> JSONResponse:
+    output_dir = _resolve_job_output_dir(job_id)
+    graph_path = (output_dir / req.path).resolve()
+    if not str(graph_path).startswith(str(output_dir.resolve())):
+        raise HTTPException(status_code=400, detail="Invalid path")
+    if graph_path.suffix.lower() != ".json":
+        raise HTTPException(status_code=400, detail="Scene graph path must be a JSON file")
+
+    from src.figureweave.drawio_ops import (
+        export_drawio_from_scene_graph,
+        normalize_scene_graph,
+        render_drawio_to_svg,
+    )
+
+    try:
+        scene_graph = normalize_scene_graph(req.scene_graph)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Failed to normalize scene graph: {exc}") from exc
+
+    graph_path.parent.mkdir(parents=True, exist_ok=True)
+    graph_path.write_text(
+        json.dumps(scene_graph, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    drawio_path = graph_path.with_name("final.drawio")
+    svg_path = graph_path.with_name("final.svg")
+    try:
+        export_drawio_from_scene_graph(scene_graph, str(drawio_path))
+        render_drawio_to_svg(str(drawio_path), output_path=str(svg_path))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Failed to rebuild DrawIO/SVG: {exc}") from exc
+
+    stamp = int(time.time() * 1000)
+    rel_graph = graph_path.relative_to(output_dir).as_posix()
+    rel_drawio = drawio_path.relative_to(output_dir).as_posix()
+    rel_svg = svg_path.relative_to(output_dir).as_posix()
+    return JSONResponse(
+        {
+            "path": rel_graph,
+            "scene_graph": scene_graph,
+            "drawio_path": rel_drawio,
+            "svg_path": rel_svg,
+            "drawio_url": f"/api/artifacts/{job_id}/{rel_drawio}?ts={stamp}",
+            "svg_url": f"/api/artifacts/{job_id}/{rel_svg}?ts={stamp}",
+        }
+    )
 
 
 @app.get("/api/uploads/{filename}")
@@ -372,59 +448,12 @@ def _pipe_output(job: Job, pipe, stream_name: str) -> None:
 
 
 def _scan_artifacts(job: Job) -> None:
-    output_dir = job.output_dir
-    candidates = [
-        output_dir / "figure.png",
-        output_dir / "samed.png",
-        output_dir / "template.svg",
-        output_dir / "final.svg",
-        output_dir / "optimized_template.svg",
-        output_dir / "candidates_manifest.json",
-    ]
-
-    icons_dir = output_dir / "icons"
-    if icons_dir.is_dir():
-        candidates.extend(icons_dir.glob("icon_*.png"))
-
-    for candidate_dir in sorted(output_dir.glob("candidate_*")):
-        if not candidate_dir.is_dir():
-            continue
-        candidates.extend(
-            [
-                candidate_dir / "figure.png",
-                candidate_dir / "samed.png",
-                candidate_dir / "template.svg",
-                candidate_dir / "final.svg",
-                candidate_dir / "optimized_template.svg",
-                candidate_dir / "candidate_error.log",
-            ]
-        )
-        candidate_icons_dir = candidate_dir / "icons"
-        if candidate_icons_dir.is_dir():
-            candidates.extend(candidate_icons_dir.glob("icon_*.png"))
-
-    for path in candidates:
-        if not path.is_file():
-            continue
-        rel_path = path.relative_to(output_dir).as_posix()
+    for item in _list_artifacts(job.output_dir, job.job_id):
+        rel_path = item["path"]
         if rel_path in job.seen:
             continue
         job.seen.add(rel_path)
-
-        kind = _classify_artifact(rel_path)
-        candidate_label = _extract_candidate_label(rel_path)
-        job.push(
-            "artifact",
-            {
-                "kind": kind,
-                "name": path.name,
-                "display_name": _display_artifact_name(rel_path),
-                "path": rel_path,
-                "url": f"/api/artifacts/{job.job_id}/{rel_path}",
-                "candidate_label": candidate_label,
-                "primary": candidate_label is None,
-            },
-        )
+        job.push("artifact", item)
 
 
 def _classify_artifact(rel_path: str) -> str:
@@ -443,6 +472,12 @@ def _classify_artifact(rel_path: str) -> str:
         return "optimized_template_svg"
     if filename == "final.svg":
         return "final_svg"
+    if filename == "final.drawio":
+        return "final_drawio"
+    if filename == "llm_final.svg":
+        return "llm_final_svg"
+    if filename == "scene_graph.json":
+        return "scene_graph"
     if filename == "candidates_manifest.json":
         return "candidate_manifest"
     if filename == "candidate_error.log":
@@ -465,6 +500,79 @@ def _display_artifact_name(rel_path: str) -> str:
     if candidate_label:
         return f"{candidate_label} / {name}"
     return name
+
+
+def _resolve_job_output_dir(job_id: str) -> Path:
+    job = JOBS.get(job_id)
+    if job:
+        return job.output_dir.resolve()
+    candidate = (OUTPUTS_DIR / job_id).resolve()
+    if not str(candidate).startswith(str(OUTPUTS_DIR.resolve())) or not candidate.is_dir():
+        raise HTTPException(status_code=404, detail="Job not found")
+    return candidate
+
+
+def _candidate_paths(output_dir: Path) -> list[Path]:
+    candidates = [
+        output_dir / "figure.png",
+        output_dir / "samed.png",
+        output_dir / "template.svg",
+        output_dir / "final.svg",
+        output_dir / "final.drawio",
+        output_dir / "llm_final.svg",
+        output_dir / "scene_graph.json",
+        output_dir / "optimized_template.svg",
+        output_dir / "candidates_manifest.json",
+        output_dir / "candidate_error.log",
+        output_dir / "run.log",
+    ]
+
+    icons_dir = output_dir / "icons"
+    if icons_dir.is_dir():
+        candidates.extend(sorted(icons_dir.glob("icon_*.png")))
+
+    for candidate_dir in sorted(output_dir.glob("candidate_*")):
+        if not candidate_dir.is_dir():
+            continue
+        candidates.extend(
+            [
+                candidate_dir / "figure.png",
+                candidate_dir / "samed.png",
+                candidate_dir / "template.svg",
+                candidate_dir / "final.svg",
+                candidate_dir / "final.drawio",
+                candidate_dir / "llm_final.svg",
+                candidate_dir / "scene_graph.json",
+                candidate_dir / "optimized_template.svg",
+                candidate_dir / "candidate_error.log",
+            ]
+        )
+        candidate_icons_dir = candidate_dir / "icons"
+        if candidate_icons_dir.is_dir():
+            candidates.extend(sorted(candidate_icons_dir.glob("icon_*.png")))
+    return candidates
+
+
+def _list_artifacts(output_dir: Path, job_id: str) -> list[dict[str, Any]]:
+    artifacts: list[dict[str, Any]] = []
+    for path in _candidate_paths(output_dir):
+        if not path.is_file():
+            continue
+        rel_path = path.relative_to(output_dir).as_posix()
+        candidate_label = _extract_candidate_label(rel_path)
+        artifacts.append(
+            {
+                "kind": _classify_artifact(rel_path),
+                "name": path.name,
+                "display_name": _display_artifact_name(rel_path),
+                "path": rel_path,
+                "url": f"/api/artifacts/{job_id}/{rel_path}",
+                "candidate_label": candidate_label,
+                "primary": candidate_label is None,
+            }
+        )
+    artifacts.sort(key=lambda item: (0 if item["primary"] else 1, item["path"]))
+    return artifacts
 
 
 def _port_in_use(port: int) -> bool:

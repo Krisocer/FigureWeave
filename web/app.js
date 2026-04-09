@@ -1,5 +1,5 @@
 (() => {
-  const INPUT_STATE_KEY = "figureweave_input_state_v1";
+  const INPUT_STATE_KEY = "figureweave_input_state_v2";
   const GEMINI_IMAGE_MODELS = {
     balanced: "gemini-3.1-flash-image-preview",
     max_quality: "gemini-3-pro-image-preview",
@@ -66,6 +66,8 @@
     const generationModeGroup = $("generationModeGroup");
     const generationModeInput = $("generationMode");
     const figureModeInput = $("figureMode");
+    const enableSvgReconstructionInput = $("enableSvgReconstruction");
+    const launchNote = $("launchNote");
     const numCandidatesInput = $("numCandidates");
     const imageProviderInput = $("imageProvider");
     const imageProviderHint = $("imageProviderHint");
@@ -103,6 +105,7 @@
         optimizeIterations: $("optimizeIterations")?.value ?? "0",
         numCandidates: numCandidatesInput?.value ?? "1",
         figureMode: figureModeInput?.value ?? "simple_flowchart",
+        enableSvgReconstruction: enableSvgReconstructionInput?.checked ?? true,
         imageSize: imageSizeInput?.value ?? "2K",
         generationMode: generationModeInput?.value ?? "balanced",
         samBackend: samBackend?.value ?? "local",
@@ -159,6 +162,12 @@
       }
       if (typeof state.figureMode === "string" && figureModeInput) {
         figureModeInput.value = state.figureMode;
+      }
+      if (
+        typeof state.enableSvgReconstruction === "boolean" &&
+        enableSvgReconstructionInput
+      ) {
+        enableSvgReconstructionInput.checked = state.enableSvgReconstruction;
       }
       if (typeof state.imageSize === "string" && imageSizeInput) {
         imageSizeInput.value = state.imageSize;
@@ -250,6 +259,31 @@
       saveInputState();
     }
 
+    function syncSvgReconstructionState() {
+      const enabled = enableSvgReconstructionInput?.checked !== false;
+      const svgControls = [
+        $("optimizeIterations"),
+        samBackend,
+        samPrompt,
+        samApiKeyInput,
+      ];
+      for (const control of svgControls) {
+        if (!control) {
+          continue;
+        }
+        control.disabled = !enabled;
+      }
+      if (confirmBtn) {
+        confirmBtn.textContent = enabled ? "Generate And Open Canvas" : "Generate Draft Only";
+      }
+      if (launchNote) {
+        launchNote.textContent = enabled
+          ? "The selected result opens in the canvas automatically. Multi-candidate runs keep every variant in the artifact drawer."
+          : "Draft-only mode stops after image generation and saves only figure.png.";
+      }
+      saveInputState();
+    }
+
     applyInputState();
 
     if (samBackend) {
@@ -258,6 +292,9 @@
     }
     if (figureModeInput) {
       figureModeInput.addEventListener("change", syncFigureModeDefaults);
+    }
+    if (enableSvgReconstructionInput) {
+      enableSvgReconstructionInput.addEventListener("change", syncSvgReconstructionState);
     }
     if (imageProviderInput) {
       imageProviderInput.addEventListener("change", syncImageSizeVisibility);
@@ -270,6 +307,7 @@
       syncImageSizeVisibility();
       syncProviderPresentation();
     }
+    syncSvgReconstructionState();
 
     if (uploadZone && referenceFile) {
       uploadZone.addEventListener("click", () => referenceFile.click());
@@ -314,6 +352,7 @@
       $("optimizeIterations"),
       numCandidatesInput,
       figureModeInput,
+      enableSvgReconstructionInput,
       $("imageSize"),
       generationModeInput,
       samPrompt,
@@ -351,6 +390,7 @@
         method_text: methodText,
         figure_caption: figureCaption?.value.trim() || null,
         figure_mode: figureModeInput?.value || "simple_flowchart",
+        enable_svg_reconstruction: enableSvgReconstructionInput?.checked !== false,
         provider: "gemini",
         image_provider: (IMAGE_PROVIDER_CONFIGS[imageProviderKey] || IMAGE_PROVIDER_CONFIGS.gemini).imageProvider,
         image_api_key: resolvedImageApiKey || null,
@@ -400,7 +440,7 @@
       } catch (err) {
         errorMsg.textContent = err.message || "Failed to start job";
         confirmBtn.disabled = false;
-        confirmBtn.textContent = "Confirm -> Canvas";
+        syncSvgReconstructionState();
       }
     });
   }
@@ -463,6 +503,11 @@
     const iframe = $("svgEditorFrame");
     const fallback = $("svgFallback");
     const fallbackObject = $("fallbackObject");
+    const fallbackImage = $("fallbackImage");
+    const sceneGraphMeta = $("sceneGraphMeta");
+    const sceneGraphEditor = $("sceneGraphEditor");
+    const sceneGraphReloadBtn = $("sceneGraphReloadBtn");
+    const sceneGraphSaveBtn = $("sceneGraphSaveBtn");
 
     if (!jobId) {
       statusText.textContent = "Missing job id";
@@ -493,6 +538,20 @@
         window.location.href = "/";
       });
     }
+
+    let currentSceneGraphPath = null;
+    let sceneGraphDirty = false;
+
+    const setSceneGraphMeta = (message, tone = "") => {
+      if (!sceneGraphMeta) {
+        return;
+      }
+      sceneGraphMeta.textContent = message;
+      sceneGraphMeta.classList.remove("is-error", "is-dirty");
+      if (tone) {
+        sceneGraphMeta.classList.add(tone);
+      }
+    };
 
     let svgEditAvailable = false;
     let svgEditPath = null;
@@ -525,6 +584,108 @@
       }
     });
 
+    function describeSceneGraph(sceneGraph, path) {
+      const meta = sceneGraph?.meta || {};
+      const panelCount = meta.panel_count ?? sceneGraph?.panels?.length ?? 0;
+      const moduleCount = meta.module_count ?? sceneGraph?.modules?.length ?? 0;
+      const textCount = meta.text_count ?? sceneGraph?.text_blocks?.length ?? 0;
+      const edgeCount = meta.edge_count ?? sceneGraph?.edges?.length ?? 0;
+      const ocrBackend = meta.ocr_backend || "unknown";
+      return `${path} | ${panelCount} panels | ${moduleCount} modules | ${edgeCount} edges | ${textCount} texts | OCR: ${ocrBackend}`;
+    }
+
+    async function loadSceneGraph(path, options = {}) {
+      if (!sceneGraphEditor || !path) {
+        return;
+      }
+      if (!options.silent) {
+        setSceneGraphMeta(`Loading ${path}...`);
+      }
+      try {
+        const response = await fetch(`/api/scene-graph/${jobId}?path=${encodeURIComponent(path)}`);
+        if (!response.ok) {
+          throw new Error((await response.text()) || "Failed to load scene graph");
+        }
+        const data = await response.json();
+        currentSceneGraphPath = data.path || path;
+        sceneGraphEditor.value = JSON.stringify(data.scene_graph || {}, null, 2);
+        sceneGraphDirty = false;
+        setSceneGraphMeta(describeSceneGraph(data.scene_graph, currentSceneGraphPath));
+      } catch (err) {
+        setSceneGraphMeta(err.message || "Failed to load scene graph", "is-error");
+      }
+    }
+
+    async function saveSceneGraph() {
+      if (!sceneGraphEditor || !currentSceneGraphPath) {
+        setSceneGraphMeta("No scene graph is loaded yet.", "is-error");
+        return;
+      }
+
+      let parsed;
+      try {
+        parsed = JSON.parse(sceneGraphEditor.value);
+      } catch (err) {
+        setSceneGraphMeta(`Invalid JSON: ${err.message}`, "is-error");
+        return;
+      }
+
+      if (sceneGraphSaveBtn) {
+        sceneGraphSaveBtn.disabled = true;
+      }
+      setSceneGraphMeta(`Saving ${currentSceneGraphPath}...`);
+
+      try {
+        const response = await fetch(`/api/scene-graph/${jobId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            path: currentSceneGraphPath,
+            scene_graph: parsed,
+          }),
+        });
+        const payload = await response.json();
+        if (!response.ok) {
+          throw new Error(payload.detail || "Failed to save scene graph");
+        }
+
+        sceneGraphEditor.value = JSON.stringify(payload.scene_graph || {}, null, 2);
+        sceneGraphDirty = false;
+        setSceneGraphMeta(describeSceneGraph(payload.scene_graph, currentSceneGraphPath));
+        appendLogLine(logBody, {
+          stream: "local",
+          line: `Scene graph rebuilt -> ${payload.drawio_path} / ${payload.svg_path}`,
+        });
+        await loadSvgAsset(payload.svg_url);
+        statusText.textContent = "Scene graph rebuilt";
+      } catch (err) {
+        setSceneGraphMeta(err.message || "Failed to save scene graph", "is-error");
+      } finally {
+        if (sceneGraphSaveBtn) {
+          sceneGraphSaveBtn.disabled = false;
+        }
+      }
+    }
+
+    if (sceneGraphReloadBtn) {
+      sceneGraphReloadBtn.addEventListener("click", () => {
+        const targetPath = currentSceneGraphPath || "scene_graph.json";
+        loadSceneGraph(targetPath);
+      });
+    }
+    if (sceneGraphSaveBtn) {
+      sceneGraphSaveBtn.addEventListener("click", saveSceneGraph);
+    }
+    if (sceneGraphEditor) {
+      sceneGraphEditor.addEventListener("input", () => {
+        if (!currentSceneGraphPath) {
+          return;
+        }
+        sceneGraphDirty = true;
+        setSceneGraphMeta(`Unsaved changes | ${currentSceneGraphPath}`, "is-dirty");
+      });
+    }
+
     const stepMap = {
       figure: { step: 1, label: "Figure generated" },
       samed: { step: 2, label: "SAM3 segmentation" },
@@ -538,26 +699,66 @@
     let currentStep = 0;
     let autoLoadedSvg = false;
 
-    const artifacts = new Set();
-    const eventSource = new EventSource(`/api/events/${jobId}`);
-    let isFinished = false;
+    function loadRasterAsset(url) {
+      if (!fallback || !fallbackImage || !iframe) {
+        return;
+      }
+      fallback.classList.add("active");
+      iframe.style.display = "none";
+      if (fallbackObject) {
+        fallbackObject.hidden = true;
+        fallbackObject.data = "";
+      }
+      fallbackImage.hidden = false;
+      fallbackImage.src = url;
+    }
 
-    eventSource.addEventListener("artifact", async (event) => {
-      const data = JSON.parse(event.data);
+    const artifacts = new Set();
+    const artifactRegistry = new Map();
+
+    const registerArtifact = async (data) => {
+      artifactRegistry.set(data.path, data);
       if (!artifacts.has(data.path)) {
         artifacts.add(data.path);
-        addArtifactCard(artifactList, data, loadSvgAsset);
+        addArtifactCard(artifactList, data, loadSvgAsset, loadSceneGraph, loadRasterAsset);
       }
 
       if ((data.kind === "template_svg" || data.kind === "final_svg") && (data.primary || !autoLoadedSvg)) {
         await loadSvgAsset(data.url);
         autoLoadedSvg = true;
+      } else if (data.kind === "figure" && !autoLoadedSvg) {
+        loadRasterAsset(data.url);
+        autoLoadedSvg = true;
+      }
+
+      if (data.kind === "scene_graph" && data.primary && !currentSceneGraphPath) {
+        await loadSceneGraph(data.path, { silent: true });
       }
 
       if (stepMap[data.kind] && stepMap[data.kind].step > currentStep) {
         currentStep = stepMap[data.kind].step;
         statusText.textContent = `Step ${currentStep}/5 - ${stepMap[data.kind].label}`;
       }
+    };
+
+    try {
+      const artifactResponse = await fetch(`/api/jobs/${jobId}/artifacts`);
+      if (artifactResponse.ok) {
+        const payload = await artifactResponse.json();
+        for (const item of payload.artifacts || []) {
+          await registerArtifact(item);
+        }
+      }
+    } catch (_err) {
+      // Ignore initial artifact load failures and keep relying on SSE.
+    }
+
+    const eventSource = new EventSource(`/api/events/${jobId}`);
+    let isFinished = false;
+
+    eventSource.addEventListener("artifact", async (event) => {
+      const data = JSON.parse(event.data);
+      await registerArtifact(data);
     });
 
     eventSource.addEventListener("status", (event) => {
@@ -600,6 +801,19 @@
         if (!svgEditPath) {
           return;
         }
+        if (fallback) {
+          fallback.classList.remove("active");
+        }
+        if (iframe) {
+          iframe.style.display = "";
+        }
+        if (fallbackObject) {
+          fallbackObject.hidden = false;
+        }
+        if (fallbackImage) {
+          fallbackImage.hidden = true;
+          fallbackImage.src = "";
+        }
         if (!svgReady) {
           pendingSvgText = svgText;
           return;
@@ -610,7 +824,17 @@
           iframe.src = `${svgEditPath}?url=${encodeURIComponent(url)}`;
         }
       } else {
-        fallbackObject.data = url;
+        if (fallback) {
+          fallback.classList.add("active");
+        }
+        if (fallbackObject) {
+          fallbackObject.hidden = false;
+          fallbackObject.data = url;
+        }
+        if (fallbackImage) {
+          fallbackImage.hidden = true;
+          fallbackImage.src = "";
+        }
       }
     }
 
@@ -643,7 +867,7 @@
     container.scrollTop = container.scrollHeight;
   }
 
-  function addArtifactCard(container, data, loadSvgAsset) {
+  function addArtifactCard(container, data, loadSvgAsset, loadSceneGraph, loadRasterAsset) {
     const card = document.createElement("a");
     card.className = "artifact-card";
     card.href = data.url;
@@ -658,6 +882,7 @@
       "template_svg",
       "optimized_template_svg",
       "final_svg",
+      "llm_final_svg",
     ]);
     let previewEl;
     if (visualKinds.has(data.kind)) {
@@ -692,11 +917,24 @@
       loadSvgAsset &&
       (data.kind === "template_svg" ||
         data.kind === "optimized_template_svg" ||
-        data.kind === "final_svg")
+        data.kind === "final_svg" ||
+        data.kind === "llm_final_svg")
     ) {
       card.addEventListener("click", async (event) => {
         event.preventDefault();
         await loadSvgAsset(data.url);
+      });
+    }
+    if (loadRasterAsset && data.kind === "figure") {
+      card.addEventListener("click", async (event) => {
+        event.preventDefault();
+        loadRasterAsset(data.url);
+      });
+    }
+    if (loadSceneGraph && data.kind === "scene_graph") {
+      card.addEventListener("click", async (event) => {
+        event.preventDefault();
+        await loadSceneGraph(data.path);
       });
     }
     container.prepend(card);
@@ -719,6 +957,12 @@
         return `${prefix}template+`;
       case "final_svg":
         return `${prefix}final`;
+      case "final_drawio":
+        return `${prefix}drawio`;
+      case "llm_final_svg":
+        return `${prefix}llm-svg`;
+      case "scene_graph":
+        return `${prefix}scene-graph`;
       case "candidate_manifest":
         return "manifest";
       case "candidate_error":

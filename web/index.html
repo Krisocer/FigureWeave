@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>FigureWeave</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=20260409-output-mode-v3" />
   </head>
   <body data-page="input">
     <div class="page page-shell">
@@ -145,6 +145,17 @@
               <input id="numCandidates" class="input" type="number" min="1" max="8" value="1" />
             </div>
 
+            <div class="field-group">
+              <label class="field-label" for="enableSvgReconstruction">Output Mode</label>
+              <label class="toggle-card" for="enableSvgReconstruction">
+                <input id="enableSvgReconstruction" type="checkbox" checked />
+                <span class="toggle-copy">
+                  <span class="toggle-title">Enable SVG / DrawIO Reconstruction</span>
+                  <span class="hint">Turn this off to stop after image generation and save only figure.png.</span>
+                </span>
+              </label>
+            </div>
+
             <div class="field-group" id="imageSizeGroup">
               <label class="field-label" for="imageSize">Image Size</label>
               <select id="imageSize" class="input">
@@ -224,13 +235,13 @@
 
           <section class="launch-card">
             <button id="confirmBtn" class="primary primary-launch">Generate And Open Canvas</button>
-            <div class="launch-note">The selected result opens in the canvas automatically. Multi-candidate runs keep every variant in the artifact drawer.</div>
+            <div id="launchNote" class="launch-note">The selected result opens in the canvas automatically. Multi-candidate runs keep every variant in the artifact drawer.</div>
             <div id="errorMsg" class="error"></div>
           </section>
         </aside>
       </main>
     </div>
 
-    <script src="/app.js"></script>
+    <script src="/app.js?v=20260409-output-mode-v3"></script>
   </body>
 </html>

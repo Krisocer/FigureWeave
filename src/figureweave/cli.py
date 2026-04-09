@@ -60,6 +60,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument('--reference_image_path', default=None, help='??????????')
     parser.add_argument('--figure_caption', default=None, help='Figure caption / figure brief????')
     parser.add_argument(
+        '--disable_svg_reconstruction',
+        action='store_true',
+        help='Skip segmentation, SVG reconstruction, and DrawIO export. Only generate the draft figure (figure.png).',
+    )
+    parser.add_argument(
         '--figure_mode',
         choices=['simple_flowchart', 'complex_paper'],
         default='simple_flowchart',
@@ -158,4 +163,5 @@ def main() -> None:
         optimize_iterations=args.optimize_iterations,
         merge_threshold=args.merge_threshold,
         figure_caption=args.figure_caption,
+        enable_svg_reconstruction=not args.disable_svg_reconstruction,
     )

@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import io
 import json
+import os
 import re
 import shutil
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Optional
 
@@ -10,6 +13,365 @@ from PIL import Image
 
 from .config import FigureMode, PlaceholderMode, ProviderType
 from .llm import call_llm_multimodal, call_llm_text
+
+
+SVG_EDITABLE_TAGS = {
+    "rect",
+    "text",
+    "tspan",
+    "path",
+    "line",
+    "polyline",
+    "polygon",
+    "image",
+    "circle",
+    "ellipse",
+    "g",
+}
+
+
+def _local_name(tag: str) -> str:
+    return tag.split("}", 1)[-1] if "}" in tag else tag
+
+
+def _make_tag(ns: str, local: str) -> str:
+    return f"{{{ns}}}{local}" if ns else local
+
+
+def _parse_float(value: Optional[str]) -> Optional[float]:
+    if value is None:
+        return None
+    match = re.search(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", str(value))
+    if not match:
+        return None
+    try:
+        return float(match.group(0))
+    except ValueError:
+        return None
+
+
+def _extract_translate(transform: Optional[str]) -> tuple[float, float]:
+    if not transform:
+        return 0.0, 0.0
+    match = re.search(r"translate\(\s*([-+]?\d*\.?\d+)(?:[\s,]+([-+]?\d*\.?\d+))?\s*\)", transform)
+    if not match:
+        return 0.0, 0.0
+    tx = _parse_float(match.group(1)) or 0.0
+    ty = _parse_float(match.group(2)) or 0.0
+    return tx, ty
+
+
+def _union_bbox(boxes: list[tuple[float, float, float, float]]) -> Optional[tuple[float, float, float, float]]:
+    if not boxes:
+        return None
+    x1 = min(b[0] for b in boxes)
+    y1 = min(b[1] for b in boxes)
+    x2 = max(b[2] for b in boxes)
+    y2 = max(b[3] for b in boxes)
+    return x1, y1, x2, y2
+
+
+def _apply_translate(
+    bbox: Optional[tuple[float, float, float, float]],
+    tx: float,
+    ty: float,
+) -> Optional[tuple[float, float, float, float]]:
+    if bbox is None:
+        return None
+    x1, y1, x2, y2 = bbox
+    return x1 + tx, y1 + ty, x2 + tx, y2 + ty
+
+
+def _element_bbox(elem: ET.Element) -> Optional[tuple[float, float, float, float]]:
+    tag = _local_name(elem.tag)
+    tx, ty = _extract_translate(elem.get("transform"))
+
+    if tag in {"rect", "image"}:
+        x = _parse_float(elem.get("x"))
+        y = _parse_float(elem.get("y"))
+        w = _parse_float(elem.get("width"))
+        h = _parse_float(elem.get("height"))
+        if None in {x, y, w, h}:
+            return None
+        return _apply_translate((x, y, x + w, y + h), tx, ty)
+
+    if tag == "line":
+        x1 = _parse_float(elem.get("x1"))
+        y1 = _parse_float(elem.get("y1"))
+        x2 = _parse_float(elem.get("x2"))
+        y2 = _parse_float(elem.get("y2"))
+        if None in {x1, y1, x2, y2}:
+            return None
+        return _apply_translate((min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2)), tx, ty)
+
+    if tag in {"circle", "ellipse"}:
+        cx = _parse_float(elem.get("cx"))
+        cy = _parse_float(elem.get("cy"))
+        if tag == "circle":
+            r = _parse_float(elem.get("r"))
+            if None in {cx, cy, r}:
+                return None
+            return _apply_translate((cx - r, cy - r, cx + r, cy + r), tx, ty)
+        rx = _parse_float(elem.get("rx"))
+        ry = _parse_float(elem.get("ry"))
+        if None in {cx, cy, rx, ry}:
+            return None
+        return _apply_translate((cx - rx, cy - ry, cx + rx, cy + ry), tx, ty)
+
+    if tag == "text":
+        x = _parse_float(elem.get("x"))
+        y = _parse_float(elem.get("y"))
+        if None in {x, y}:
+            return None
+        font_size = _parse_float(elem.get("font-size")) or 32.0
+        text_value = "".join(elem.itertext()).strip() or "X"
+        width = max(font_size * 0.55 * len(text_value), font_size * 0.8)
+        height = font_size * 1.2
+        anchor = (elem.get("text-anchor") or "").strip().lower()
+        if anchor == "middle":
+            x1 = x - width / 2
+            x2 = x + width / 2
+        elif anchor == "end":
+            x1 = x - width
+            x2 = x
+        else:
+            x1 = x
+            x2 = x + width
+        return _apply_translate((x1, y - height, x2, y + height * 0.15), tx, ty)
+
+    if tag in {"path", "polygon", "polyline"}:
+        raw = elem.get("d") if tag == "path" else elem.get("points")
+        if not raw:
+            return None
+        nums = [_parse_float(v) for v in re.findall(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", raw)]
+        nums = [v for v in nums if v is not None]
+        if len(nums) < 2:
+            return None
+        xs = nums[0::2]
+        ys = nums[1::2]
+        if not xs or not ys:
+            return None
+        return _apply_translate((min(xs), min(ys), max(xs), max(ys)), tx, ty)
+
+    if tag == "g":
+        boxes = []
+        for child in list(elem):
+            child_box = _element_bbox(child)
+            if child_box:
+                boxes.append(child_box)
+        return _apply_translate(_union_bbox(boxes), tx, ty)
+
+    return None
+
+
+def _bbox_area(bbox: Optional[tuple[float, float, float, float]]) -> float:
+    if bbox is None:
+        return 0.0
+    x1, y1, x2, y2 = bbox
+    return max(0.0, x2 - x1) * max(0.0, y2 - y1)
+
+
+def _bbox_center(bbox: Optional[tuple[float, float, float, float]]) -> Optional[tuple[float, float]]:
+    if bbox is None:
+        return None
+    x1, y1, x2, y2 = bbox
+    return (x1 + x2) / 2, (y1 + y2) / 2
+
+
+def _expand_bbox(bbox: tuple[float, float, float, float], margin: float) -> tuple[float, float, float, float]:
+    x1, y1, x2, y2 = bbox
+    return x1 - margin, y1 - margin, x2 + margin, y2 + margin
+
+
+def _bbox_contains_point(bbox: tuple[float, float, float, float], x: float, y: float) -> bool:
+    x1, y1, x2, y2 = bbox
+    return x1 <= x <= x2 and y1 <= y <= y2
+
+
+def _bbox_intersects(a: tuple[float, float, float, float], b: tuple[float, float, float, float]) -> bool:
+    ax1, ay1, ax2, ay2 = a
+    bx1, by1, bx2, by2 = b
+    return not (ax2 < bx1 or bx2 < ax1 or ay2 < by1 or by2 < ay1)
+
+
+def _get_class_tokens(elem: ET.Element) -> set[str]:
+    return {token.strip() for token in (elem.get("class") or "").split() if token.strip()}
+
+
+def _ensure_semantic_element_ids(root: ET.Element) -> None:
+    counters: dict[str, int] = {}
+    for elem in root.iter():
+        tag = _local_name(elem.tag)
+        if tag not in SVG_EDITABLE_TAGS:
+            continue
+        if elem.get("id"):
+            continue
+        counters[tag] = counters.get(tag, 0) + 1
+        elem.set("id", f"fw-{tag}-{counters[tag]:03d}")
+
+
+def _ensure_existing_semantic_groups(root: ET.Element) -> None:
+    for elem in root.iter():
+        if _local_name(elem.tag) != "g":
+            continue
+        elem_id = (elem.get("id") or "").strip().lower()
+        if not elem_id:
+            continue
+        classes = _get_class_tokens(elem)
+        if elem_id.startswith("module_") or elem_id.startswith("module-"):
+            classes.update({"fw-module", "fw-editable"})
+            elem.set("data-role", elem.get("data-role") or "module")
+        elif elem_id.startswith("panel_") or elem_id.startswith("panel-"):
+            classes.update({"fw-panel", "fw-editable"})
+            elem.set("data-role", elem.get("data-role") or "panel")
+        if classes:
+            elem.set("class", " ".join(sorted(classes)))
+
+
+def _ensure_cairo_runtime() -> None:
+    gtk_bins = [
+        Path(r"C:\Program Files\GTK3-Runtime Win64\bin"),
+        Path(r"C:\Program Files (x86)\GTK3-Runtime Win64\bin"),
+    ]
+    for bin_dir in gtk_bins:
+        if not bin_dir.is_dir():
+            continue
+        current_path = os.environ.get("PATH", "")
+        if str(bin_dir) not in current_path:
+            os.environ["PATH"] = str(bin_dir) + os.pathsep + current_path
+        if hasattr(os, "add_dll_directory"):
+            try:
+                os.add_dll_directory(str(bin_dir))
+            except (FileNotFoundError, OSError):
+                pass
+        break
+
+
+def _wrap_members_with_group(
+    root: ET.Element,
+    members: list[ET.Element],
+    *,
+    ns: str,
+    group_id: str,
+    class_name: str,
+    role: str,
+) -> ET.Element:
+    children = list(root)
+    insert_index = min(children.index(member) for member in members if member in children)
+    group = ET.Element(
+        _make_tag(ns, "g"),
+        {
+            "id": group_id,
+            "class": class_name,
+            "data-role": role,
+        },
+    )
+    for member in members:
+        if member in root:
+            root.remove(member)
+            group.append(member)
+    root.insert(insert_index, group)
+    return group
+
+
+def semanticize_svg_for_editing(svg_code: str) -> str:
+    """Wrap low-level SVG primitives into semantic groups for easier editing."""
+    try:
+        root = ET.fromstring(svg_code.encode("utf-8"))
+    except Exception:
+        return svg_code
+
+    ns = root.tag.split("}", 1)[0].strip("{") if "}" in root.tag else ""
+    _ensure_existing_semantic_groups(root)
+    module_candidates: list[tuple[float, ET.Element, tuple[float, float, float, float]]] = []
+    panel_candidates: list[tuple[float, ET.Element, tuple[float, float, float, float]]] = []
+
+    for child in list(root):
+        if _local_name(child.tag) != "rect":
+            continue
+        classes = _get_class_tokens(child)
+        bbox = _element_bbox(child)
+        if not bbox:
+            continue
+        area = _bbox_area(bbox)
+        if "border-dashed" in classes:
+            panel_candidates.append((area, child, bbox))
+        elif any(cls.startswith("box-") for cls in classes):
+            module_candidates.append((area, child, bbox))
+
+    assigned: set[int] = set()
+    module_index = 0
+    for _, rect, bbox in sorted(module_candidates, key=lambda item: item[0]):
+        if id(rect) in assigned or rect not in root:
+            continue
+        width = bbox[2] - bbox[0]
+        height = bbox[3] - bbox[1]
+        margin = max(18.0, min(width, height) * 0.18)
+        expanded = _expand_bbox(bbox, margin)
+        members: list[ET.Element] = []
+        for child in list(root):
+            if id(child) in assigned:
+                continue
+            child_tag = _local_name(child.tag)
+            if child is rect:
+                members.append(child)
+                continue
+            if child_tag in {"defs", "style"}:
+                continue
+            child_box = _element_bbox(child)
+            if not child_box:
+                continue
+            center = _bbox_center(child_box)
+            if center and _bbox_contains_point(expanded, center[0], center[1]):
+                members.append(child)
+            elif _bbox_intersects(expanded, child_box) and _bbox_area(child_box) < _bbox_area(expanded) * 0.7:
+                members.append(child)
+        if len(members) >= 2:
+            module_index += 1
+            group = _wrap_members_with_group(
+                root,
+                members,
+                ns=ns,
+                group_id=f"fw-module-{module_index:02d}",
+                class_name="fw-module fw-editable",
+                role="module",
+            )
+            assigned.update(id(member) for member in list(group))
+
+    panel_index = 0
+    for _, rect, bbox in sorted(panel_candidates, key=lambda item: item[0]):
+        if rect not in root:
+            continue
+        width = bbox[2] - bbox[0]
+        height = bbox[3] - bbox[1]
+        margin = max(24.0, min(width, height) * 0.05)
+        expanded = _expand_bbox(bbox, margin)
+        members: list[ET.Element] = []
+        for child in list(root):
+            if _local_name(child.tag) in {"defs", "style"}:
+                continue
+            child_box = _element_bbox(child)
+            if not child_box:
+                continue
+            center = _bbox_center(child_box)
+            if center and _bbox_contains_point(expanded, center[0], center[1]):
+                members.append(child)
+        if len(members) >= 2:
+            panel_index += 1
+            _wrap_members_with_group(
+                root,
+                members,
+                ns=ns,
+                group_id=f"fw-panel-{panel_index:02d}",
+                class_name="fw-panel fw-editable",
+                role="panel",
+            )
+
+    root.set("data-figureweave-export", "semantic-svg")
+    _ensure_semantic_element_ids(root)
+    if ns:
+        ET.register_namespace("", ns)
+    return ET.tostring(root, encoding="unicode")
 
 def generate_svg_template(
     figure_path: str,
@@ -87,6 +449,13 @@ Image reference notes:
 {caption_context}
 {complex_context}
 
+Editability requirements:
+- Return semantically editable SVG, not just visually similar SVG.
+- Wrap each logical module or block in a <g> element with a stable id such as module_encoder, module_xtgap, module_prediction, etc.
+- Wrap each major panel or region in a <g> element with a stable id such as panel_input, panel_training, panel_evaluation, etc.
+- Keep text as <text> elements, boxes as <rect> elements, and connectors as <line>/<path> whenever possible.
+- Avoid converting the whole figure into arbitrary paths.
+
 Please output ONLY the SVG code, starting with <svg and ending with </svg>. Do not include any explanation or markdown formatting."""
     else:
         # 基础 prompt
@@ -107,6 +476,15 @@ Figure caption / intent:
 """
         if complex_context:
             base_prompt += f"\n{complex_context}\n"
+        base_prompt += """
+
+EDITABILITY REQUIREMENTS:
+- Return semantically editable SVG, not just a visually similar one.
+- Wrap each logical module in a <g> element with a stable id, for example module_encoder, module_xtgap, module_fusion, module_prediction.
+- Wrap each major panel or region in a <g> element with a stable id, for example panel_input, panel_training, panel_evaluation.
+- Keep text as <text> elements, boxes as <rect> elements, and connectors as <line>/<path> whenever possible.
+- Do not flatten the whole figure into arbitrary paths unless absolutely unavoidable.
+"""
 
     if not no_icon_mode and placeholder_mode == "box":
         # box 模式：传入 boxlib 坐标
@@ -176,6 +554,7 @@ Please output ONLY the SVG code, starting with <svg and ending with </svg>. Do n
         base_url=base_url,
         provider=provider,
     )
+    svg_code = semanticize_svg_for_editing(svg_code)
 
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -653,6 +1032,7 @@ def validate_base64_images(svg_code: str, expected_count: int) -> tuple[bool, st
 def svg_to_png(svg_path: str, output_path: str, scale: float = 1.0) -> Optional[str]:
     """将 SVG 转换为 PNG"""
     try:
+        _ensure_cairo_runtime()
         import cairosvg
         cairosvg.svg2png(url=svg_path, write_to=output_path, scale=scale)
         return output_path
@@ -882,6 +1262,8 @@ Please carefully compare and check the following **TWO MAJOR ASPECTS with EIGHT 
 
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    current_svg = semanticize_svg_for_editing(current_svg)
 
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(current_svg)

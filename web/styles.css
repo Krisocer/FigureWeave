@@ -169,6 +169,12 @@ body::after {
   background: rgba(250, 242, 233, 0.96);
 }
 
+.ghost:disabled {
+  opacity: 0.58;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .ghost-contrast {
   background: rgba(252, 247, 240, 0.96);
 }
@@ -327,6 +333,11 @@ body::after {
   padding: 22px;
 }
 
+.scene-graph-card {
+  display: grid;
+  gap: 14px;
+}
+
 .field-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -339,6 +350,36 @@ body::after {
 
 .field-group {
   margin-bottom: 16px;
+}
+
+.toggle-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgba(95, 76, 55, 0.12);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.88);
+  cursor: pointer;
+}
+
+.toggle-card input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: #d4844d;
+  cursor: pointer;
+}
+
+.toggle-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.toggle-title {
+  font-weight: 700;
+  color: var(--text);
 }
 
 .field-label,
@@ -381,6 +422,15 @@ select {
 
 .textarea-caption {
   min-height: 160px;
+}
+
+.textarea-scene-graph {
+  min-height: 360px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: pre;
+  tab-size: 2;
 }
 
 .input:focus,
@@ -576,6 +626,11 @@ select:focus,
   background: rgba(255, 255, 255, 0.92);
 }
 
+.fallback-image {
+  object-fit: contain;
+  padding: 8px;
+}
+
 .canvas-sidebar {
   display: grid;
   gap: 18px;
@@ -583,6 +638,25 @@ select:focus,
 
 .sidebar-card {
   background: linear-gradient(180deg, rgba(255, 251, 245, 0.96), rgba(248, 242, 235, 0.96));
+}
+
+.scene-graph-meta {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(95, 76, 55, 0.08);
+  background: rgba(255, 248, 241, 0.72);
+  color: var(--text-soft);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.scene-graph-meta.is-error {
+  color: var(--danger);
+  border-color: rgba(183, 95, 76, 0.18);
+}
+
+.scene-graph-meta.is-dirty {
+  color: var(--accent);
 }
 
 .artifact-panel {

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>FigureWeave Canvas</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=20260409-output-mode-v3" />
   </head>
   <body data-page="canvas">
     <div class="canvas-page canvas-shell-page">
@@ -41,6 +41,7 @@
                   Drop an SVG-Edit build into <code>web/vendor/svg-edit/</code> (editor/index.html) to enable editing.
                 </div>
                 <object id="fallbackObject" type="image/svg+xml" class="fallback-object"></object>
+                <img id="fallbackImage" class="fallback-object fallback-image" alt="Raster preview" hidden />
               </div>
             </div>
           </div>
@@ -63,6 +64,25 @@
             <div class="panel-header">Artifacts</div>
             <div class="artifact-list" id="artifactList"></div>
           </aside>
+
+          <section class="sidebar-card scene-graph-card">
+            <div class="section-tag">Structure</div>
+            <div class="panel-title">Scene Graph Inspector</div>
+            <p class="sidebar-text">
+              Review and patch the recovered structure graph, then rebuild DrawIO and SVG directly from the browser.
+            </p>
+            <div class="scene-graph-meta" id="sceneGraphMeta">No scene graph loaded yet.</div>
+            <div class="sidebar-actions scene-graph-actions">
+              <button class="ghost" id="sceneGraphReloadBtn">Reload Graph</button>
+              <button class="ghost ghost-contrast" id="sceneGraphSaveBtn">Save + Rebuild</button>
+            </div>
+            <textarea
+              id="sceneGraphEditor"
+              class="textarea textarea-scene-graph"
+              spellcheck="false"
+              placeholder="scene_graph.json will appear here when available"
+            ></textarea>
+          </section>
         </aside>
       </main>
 
@@ -72,6 +92,6 @@
       </aside>
     </div>
 
-    <script src="/app.js"></script>
+    <script src="/app.js?v=20260409-output-mode-v3"></script>
   </body>
 </html>
